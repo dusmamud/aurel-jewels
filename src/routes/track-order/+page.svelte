@@ -83,7 +83,7 @@
 				{/if}
 				<button
 					type="submit"
-					class="inline-flex min-h-12 w-full items-center justify-center rounded-full bg-gold px-7 text-base font-semibold text-white transition-colors duration-200 hover:bg-gold-dark sm:w-auto"
+					class="inline-flex min-h-12 w-full items-center justify-center rounded-full bg-emerald px-7 text-base font-semibold text-white transition-colors duration-200 hover:bg-emerald-deep sm:w-auto"
 				>
 					Track my order
 				</button>
@@ -109,7 +109,7 @@
 							{#if i < steps.length - 1}
 								<span
 									class="absolute top-8 left-[15px] h-[calc(100%-2rem)] w-0.5 {i < currentStep
-										? 'bg-gold'
+										? 'bg-gold-dark'
 										: 'bg-line'}"
 									aria-hidden="true"
 								></span>
@@ -117,7 +117,7 @@
 							<span
 								class="relative flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-sm font-bold {i <
 								currentStep
-									? 'bg-gold text-white'
+									? 'bg-gold-dark text-white'
 									: i === currentStep
 										? 'bg-emerald text-white'
 										: 'bg-sand text-muted'}"

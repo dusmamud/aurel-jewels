@@ -1,9 +1,10 @@
 <script lang="ts">
 	import { ArrowLeft, ArrowRight, Check, CheckCircle2, CreditCard, ShoppingBag } from '@lucide/svelte';
-	import { site, usd } from '#lib/data/site.ts';
+	import { instalment, giftWrapFee, site, usd } from '#lib/data/site.ts';
 	import { cart, clearCart } from '#lib/cart.svelte.ts';
 	import PageHero from '#lib/components/PageHero.svelte';
 	import Picture from '#lib/components/Picture.svelte';
+	import TrustStrip from '#lib/components/TrustStrip.svelte';
 
 	type Errors = Record<string, string>;
 
@@ -18,12 +19,19 @@
 	let cardExpiry = $state('');
 	let cardCvc = $state('');
 	let errors = $state<Errors>({});
+	let giftWrap = $state(false);
+	let giftMessage = $state('');
 
 	// Snapshot taken at order time so the confirmation survives clearCart().
 	let orderRef = $state('');
 	let eta = $state('');
 	let orderTotal = $state(0);
 	let orderCount = $state(0);
+	let orderGiftWrap = $state(false);
+	let orderGiftMessage = $state('');
+
+	const giftFee = $derived(giftWrap ? giftWrapFee : 0);
+	const checkoutTotal = $derived(cart.total + giftFee);
 
 	const steps = [
 		{ n: 1, label: 'Cart review' },
@@ -59,8 +67,10 @@
 			day: 'numeric',
 			year: 'numeric'
 		});
-		orderTotal = cart.total;
+		orderTotal = checkoutTotal;
 		orderCount = cart.count;
+		orderGiftWrap = giftWrap;
+		orderGiftMessage = giftMessage.trim();
 		clearCart();
 		step = 3;
 		if (typeof window !== 'undefined') window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -149,6 +159,40 @@
 							</li>
 						{/each}
 					</ul>
+					<!-- Make it a gift: wrap + hand-written message -->
+					<fieldset class="mt-6 min-w-0 rounded-3xl bg-white p-6 ring-1 ring-line">
+						<legend class="px-2 font-display text-lg font-semibold text-ink">
+							Make it a gift
+						</legend>
+						<label for="co-gift-wrap" class="flex min-h-12 cursor-pointer items-start gap-3">
+							<input
+								id="co-gift-wrap"
+								type="checkbox"
+								bind:checked={giftWrap}
+								class="mt-1 h-5 w-5 shrink-0 accent-emerald"
+							/>
+							<span class="text-[0.95rem] leading-relaxed text-ink">
+								<span class="font-semibold">Add gift wrap — {usd(giftWrapFee)}</span>
+								<span class="block text-sm text-muted">
+									Extra ribbon and tissue over our signature emerald gift box. No prices in the box.
+								</span>
+							</span>
+						</label>
+						<div class="mt-4">
+							<label for="co-gift-message" class="mb-1.5 block text-sm font-semibold text-ink">
+								Gift message <span class="font-normal text-muted">(hand-written in the box, free)</span>
+							</label>
+							<textarea
+								id="co-gift-message"
+								bind:value={giftMessage}
+								rows="3"
+								maxlength="200"
+								placeholder="Happy anniversary — ten years, and still my favourite person…"
+								class="w-full rounded-2xl border border-line bg-white px-4 py-3 text-base text-ink placeholder:text-muted focus:border-emerald focus:outline-none"
+							></textarea>
+							<p class="mt-1.5 text-xs text-muted">{giftMessage.length}/200 characters</p>
+						</div>
+					</fieldset>
 					<p class="mt-4">
 						<a
 							href="/cart"
@@ -190,9 +234,15 @@
 							{cart.shipping === 0 ? 'Free' : usd(cart.shipping)}
 						</dd>
 					</div>
+					{#if giftWrap}
+						<div class="flex justify-between gap-4">
+							<dt class="text-muted">Gift wrap</dt>
+							<dd class="font-semibold text-ink">{usd(giftFee)}</dd>
+						</div>
+					{/if}
 					<div class="flex justify-between gap-4 border-t border-line pt-3 text-base">
 						<dt class="font-bold text-ink">Total</dt>
-						<dd class="font-bold text-ink">{usd(cart.total)}</dd>
+						<dd class="font-bold text-ink">{usd(checkoutTotal)}</dd>
 					</div>
 				</dl>
 				<button
@@ -206,6 +256,13 @@
 				>
 					Continue to shipping <ArrowRight size={17} aria-hidden="true" />
 				</button>
+				<p class="mt-3 text-center text-sm text-muted">
+					or 4 interest-free payments of {instalment(checkoutTotal)} with Klarna — subject to
+					approval · <a href="/financing" class="font-semibold text-emerald underline underline-offset-2">How financing works</a>
+				</p>
+				<div class="mt-6">
+					<TrustStrip />
+				</div>
 			</aside>
 		</div>
 	{:else if step === 2}
@@ -221,7 +278,7 @@
 			>
 				<h2 class="font-display text-2xl font-medium text-ink">Step 2 — Shipping &amp; payment</h2>
 
-				<fieldset class="mt-6 rounded-3xl bg-white p-6 ring-1 ring-line">
+				<fieldset class="mt-6 min-w-0 rounded-3xl bg-white p-6 ring-1 ring-line">
 					<legend class="px-2 font-display text-lg font-semibold text-ink">Shipping details</legend>
 					<div class="grid gap-4 sm:grid-cols-2">
 						<div class="sm:col-span-2">
@@ -316,7 +373,7 @@
 					</div>
 				</fieldset>
 
-				<fieldset class="mt-6 rounded-3xl bg-white p-6 ring-1 ring-line">
+				<fieldset class="mt-6 min-w-0 rounded-3xl bg-white p-6 ring-1 ring-line">
 					<legend class="flex items-center gap-2 px-2 font-display text-lg font-semibold text-ink">
 						<CreditCard size={20} aria-hidden="true" class="text-emerald" /> Payment
 						<span class="text-sm font-normal text-muted">(demo — no charge)</span>
@@ -420,7 +477,7 @@
 						type="submit"
 						class="inline-flex min-h-12 flex-1 items-center justify-center gap-2 rounded-full bg-emerald px-6 text-sm font-bold tracking-wide text-white uppercase transition-colors duration-200 hover:bg-emerald-deep"
 					>
-						Place order — {usd(cart.total)}
+						Place order — {usd(checkoutTotal)}
 					</button>
 				</div>
 			</form>
@@ -448,9 +505,15 @@
 							{cart.shipping === 0 ? 'Free' : usd(cart.shipping)}
 						</dd>
 					</div>
+					{#if giftWrap}
+						<div class="flex justify-between gap-4">
+							<dt class="text-muted">Gift wrap</dt>
+							<dd class="font-semibold text-ink">{usd(giftFee)}</dd>
+						</div>
+					{/if}
 					<div class="flex justify-between gap-4 border-t border-line pt-3 text-base">
 						<dt class="font-bold text-ink">Total</dt>
-						<dd class="font-bold text-ink">{usd(cart.total)}</dd>
+						<dd class="font-bold text-ink">{usd(checkoutTotal)}</dd>
 					</div>
 				</dl>
 			</aside>
@@ -483,6 +546,18 @@
 					<dt class="text-muted">Items</dt>
 					<dd class="font-bold text-ink">{orderCount}</dd>
 				</div>
+				{#if orderGiftWrap || orderGiftMessage}
+					<div class="flex justify-between gap-4">
+						<dt class="text-muted">Gift wrap</dt>
+						<dd class="font-bold text-ink">{orderGiftWrap ? `Yes — ${usd(giftWrapFee)}` : 'No'}</dd>
+					</div>
+					{#if orderGiftMessage}
+						<div class="flex flex-col gap-1">
+							<dt class="text-muted">Gift message</dt>
+							<dd class="font-medium break-words text-ink">“{orderGiftMessage}”</dd>
+						</div>
+					{/if}
+				{/if}
 				<div class="flex justify-between gap-4 border-t border-line pt-3">
 					<dt class="font-bold text-ink">Total paid</dt>
 					<dd class="font-bold text-ink">{usd(orderTotal)}</dd>

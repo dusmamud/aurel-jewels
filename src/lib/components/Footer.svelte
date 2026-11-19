@@ -10,7 +10,9 @@
 		{ label: 'Necklaces', href: '/shop?category=necklaces' },
 		{ label: 'Earrings', href: '/shop?category=earrings' },
 		{ label: 'Bracelets', href: '/shop?category=bracelets' },
-		{ label: 'Gift Collection', href: '/collections/gifts' }
+		{ label: 'Gift Collection', href: '/collections/gifts' },
+		{ label: 'Lookbook', href: '/lookbook' },
+		{ label: 'Gift Finder', href: '/gift-finder' }
 	];
 	const careLinks = [
 		{ label: 'FAQs', href: '/faq' },
@@ -18,12 +20,18 @@
 		{ label: 'Returns & Refunds', href: '/returns' },
 		{ label: 'Size Guide', href: '/size-guide' },
 		{ label: 'Care Instructions', href: '/care' },
-		{ label: 'Track Your Order', href: '/track-order' }
+		{ label: 'Track Your Order', href: '/track-order' },
+		{ label: 'Warranty & Authenticity', href: '/warranty' },
+		{ label: 'Financing', href: '/financing' },
+		{ label: 'Rewards', href: '/rewards' }
 	];
 	const aboutLinks = [
 		{ label: 'Our Story', href: '/about' },
 		{ label: 'Our Materials', href: '/about#materials' },
-		{ label: 'Sustainability', href: '/about#sustainability' },
+		{ label: 'Sustainability', href: '/sustainability' },
+		{ label: 'Bespoke & Custom', href: '/bespoke' },
+		{ label: 'Book an Appointment', href: '/appointments' },
+		{ label: 'Guides', href: '/guides' },
 		{ label: 'Blog', href: '/blog' },
 		{ label: 'Contact Us', href: '/contact' }
 	];
@@ -82,9 +90,9 @@
 			</nav>
 			<h3 class="mt-6 text-sm font-bold tracking-[0.2em] text-gold-light uppercase">Follow Us</h3>
 			<div class="mt-3 flex gap-3">
-				{#each [{ label: 'Instagram', name: 'instagram' }, { label: 'Facebook', name: 'facebook' }, { label: 'X', name: 'x' }] as s}
+				{#each [{ label: 'Instagram', name: 'instagram', href: site.social.instagram }, { label: 'Facebook', name: 'facebook', href: site.social.facebook }, { label: 'X', name: 'x', href: site.social.x }] as s}
 					<a
-						href="https://www.instagram.com/"
+						href={s.href}
 						target="_blank"
 						rel="noopener"
 						aria-label="Aurel Jewels on {s.label}"

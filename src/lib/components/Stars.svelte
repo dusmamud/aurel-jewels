@@ -10,7 +10,9 @@
 		<Star
 			size={15}
 			aria-hidden="true"
-			class={i < full ? 'fill-gold text-gold' : 'fill-sand-deep text-sand-deep'}
+			class={i < full
+				? 'fill-gold-dark text-gold-dark' /* #7a5f1e: 6.03:1 on white, passes 3:1 for graphics */
+				: 'fill-sand-deep text-muted' /* muted stroke keeps empty stars visible (5.9:1 on white) */}
 		/>
 	{/each}
 	{#if reviews !== undefined}

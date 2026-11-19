@@ -130,7 +130,7 @@
 					{/if}
 					<button
 						type="submit"
-						class="inline-flex min-h-12 w-full items-center justify-center rounded-full bg-gold px-7 text-base font-semibold text-white transition-colors duration-200 hover:bg-gold-dark sm:w-auto"
+						class="inline-flex min-h-12 w-full items-center justify-center rounded-full bg-emerald px-7 text-base font-semibold text-white transition-colors duration-200 hover:bg-emerald-deep sm:w-auto"
 					>
 						Send message
 					</button>

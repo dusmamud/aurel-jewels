@@ -2,6 +2,7 @@
 	import { ChevronLeft } from '@lucide/svelte';
 	import type { Collection } from '#lib/data/site.ts';
 	import { products, site } from '#lib/data/site.ts';
+	import Breadcrumbs from '#lib/components/Breadcrumbs.svelte';
 	import Picture from '#lib/components/Picture.svelte';
 	import ProductCard from '#lib/components/ProductCard.svelte';
 
@@ -21,6 +22,13 @@
 </svelte:head>
 
 <!-- Collection header with image -->
+<Breadcrumbs
+	items={[
+		{ label: 'Home', href: '/' },
+		{ label: 'Collections', href: '/collections' },
+		{ label: collection.name }
+	]}
+/>
 <section class="bg-cream">
 	<div class="mx-auto max-w-7xl px-4 pt-6 pb-12 sm:px-6 sm:pt-8 sm:pb-14 lg:px-8">
 		<a

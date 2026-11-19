@@ -17,6 +17,8 @@
 	import Newsletter from '#lib/components/Newsletter.svelte';
 	import WhatsAppIcon from '#lib/components/WhatsAppIcon.svelte';
 	import { site } from '#lib/data/site.ts';
+	import { loadCart } from '#lib/cart.svelte.ts';
+	import { loadWishlist } from '#lib/wishlist.svelte.ts';
 
 	let { children } = $props();
 
@@ -58,8 +60,15 @@
 		},
 		priceRange: '$$',
 		url: site.url,
-		sameAs: ['https://www.instagram.com/', 'https://www.facebook.com/']
+		sameAs: [site.social.instagram, site.social.facebook, site.social.x]
 	};
+
+	// Restore persisted cart + wishlist once, on the client only
+	// ($effect never runs during SSR/prerender).
+	$effect(() => {
+		loadCart();
+		loadWishlist();
+	});
 
 	// Smooth scroll (Lenis) + GSAP ScrollTrigger, one rAF loop, reduced-motion gated.
 	$effect(() => {
@@ -119,7 +128,17 @@
 		content="Every detail, a little extraordinary. Timeless jewelry, ethically sourced and crafted to last."
 	/>
 	<meta property="og:url" content={site.url} />
+	<meta property="og:image" content="{site.url}/images/hero-1200.jpg" />
+	<meta
+		property="og:image:alt"
+		content="Gold necklace with a large oval emerald pendant and a matching emerald ring on beige stone pedestals"
+	/>
 	<meta name="twitter:card" content="summary_large_image" />
+	<meta name="twitter:image" content="{site.url}/images/hero-1200.jpg" />
+	<meta
+		name="twitter:image:alt"
+		content="Gold necklace with a large oval emerald pendant and a matching emerald ring on beige stone pedestals"
+	/>
 	<!-- eslint-disable-next-line svelte/no-at-html-tags -->
 	{@html `<script type="application/ld+json">${JSON.stringify(jsonLd)}</script>`}
 </svelte:head>

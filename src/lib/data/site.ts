@@ -18,7 +18,12 @@ export const site = {
 	addressShort: 'SoHo, New York',
 	hours: 'Mon – Sat: 10:00 AM – 7:00 PM ET',
 	hoursShort: 'Mon – Sat: 10:00 AM – 7:00 PM',
-	url: 'https://aureljewels.com',
+	url: 'https://aurel-jewels.pages.dev',
+	social: {
+		instagram: 'https://www.instagram.com/aureljewels',
+		facebook: 'https://www.facebook.com/aureljewels',
+		x: 'https://x.com/aureljewels'
+	},
 	mapEmbed:
 		'https://maps.google.com/maps?q=Mercer%20Street%2C%20SoHo%2C%20New%20York%2C%20NY%2010013&t=&z=15&ie=UTF8&iwloc=&output=embed',
 	freeShippingOver: 50,
@@ -29,6 +34,8 @@ export const nav = [
 	{ label: 'Home', href: '/' },
 	{ label: 'Shop', href: '/shop' },
 	{ label: 'Collections', href: '/collections' },
+	{ label: 'Bespoke', href: '/bespoke' },
+	{ label: 'Guides', href: '/guides' },
 	{ label: 'About Us', href: '/about' },
 	{ label: 'Blog', href: '/blog' },
 	{ label: 'Contact Us', href: '/contact' }
@@ -61,6 +68,8 @@ export type Product = {
 	reviews: number;
 	image: string;
 	imageAlt: string;
+	altImage: string;
+	gift: boolean;
 	badge?: 'Bestseller' | 'New' | 'Limited';
 	description: string;
 	long: string[];
@@ -80,6 +89,8 @@ export const products: Product[] = [
 		reviews: 128,
 		image: 'product-eternal-spark-ring',
 		imageAlt: 'Classic gold solitaire engagement ring with a large round brilliant diamond',
+		altImage: 'product-eternal-spark-ring-alt',
+		gift: true,
 		badge: 'Bestseller',
 		description: 'A timeless solitaire — one brilliant diamond, held high on a polished gold band.',
 		long: [
@@ -100,6 +111,8 @@ export const products: Product[] = [
 		reviews: 96,
 		image: 'product-emerald-grace-necklace',
 		imageAlt: 'Gold necklace with a rectangular emerald pendant surrounded by small diamonds',
+		altImage: 'product-emerald-grace-necklace-alt',
+		gift: true,
 		badge: 'Bestseller',
 		description: 'A deep green emerald, framed in a halo of sparkle, on a fine gold chain.',
 		long: [
@@ -120,6 +133,8 @@ export const products: Product[] = [
 		reviews: 74,
 		image: 'product-luminous-hoop-earrings',
 		imageAlt: 'Pair of gold hoop earrings encrusted with small diamonds',
+		altImage: 'product-luminous-hoop-earrings-alt',
+		gift: false,
 		badge: 'Bestseller',
 		description: 'Everyday hoops, lined inside and out with light.',
 		long: [
@@ -141,6 +156,8 @@ export const products: Product[] = [
 		reviews: 112,
 		image: 'product-radiant-tennis-bracelet',
 		imageAlt: 'Gold tennis bracelet with a row of round diamonds',
+		altImage: 'product-radiant-tennis-bracelet-alt',
+		gift: true,
 		badge: 'Bestseller',
 		description: 'A continuous line of light — the classic tennis bracelet, perfected.',
 		long: [
@@ -161,6 +178,8 @@ export const products: Product[] = [
 		reviews: 57,
 		image: 'product-aurora-solitaire-ring',
 		imageAlt: 'Gold ring with an oval diamond solitaire and pavé band',
+		altImage: 'product-aurora-solitaire-ring-alt',
+		gift: false,
 		badge: 'New',
 		description: 'An oval solitaire on a pavé band — modern, elongated, quietly dramatic.',
 		long: [
@@ -180,6 +199,8 @@ export const products: Product[] = [
 		reviews: 83,
 		image: 'product-golden-clover-pendant',
 		imageAlt: 'Gold necklace with a four-leaf clover pendant in green malachite',
+		altImage: 'product-golden-clover-pendant-alt',
+		gift: true,
 		description: 'A four-leaf clover in green stone and gold — a little luck, worn close.',
 		long: [
 			'The Golden Clover Pendant is our good-luck piece: a four-leaf clover in deep green stone, edged in polished gold, on a fine chain.',
@@ -198,6 +219,8 @@ export const products: Product[] = [
 		reviews: 61,
 		image: 'product-pearl-drop-earrings',
 		imageAlt: 'Pair of gold drop earrings with lustrous white pearls',
+		altImage: 'product-pearl-drop-earrings-alt',
+		gift: true,
 		description: 'Lustrous freshwater pearls, dropped from a small gold stud.',
 		long: [
 			'The Pearl Drop Earrings are the quiet classic: a lustrous white pearl suspended from a small gold stud, moving gently as you move.',
@@ -216,6 +239,8 @@ export const products: Product[] = [
 		reviews: 45,
 		image: 'product-emerald-stud-earrings',
 		imageAlt: 'Pair of gold stud earrings with round emeralds surrounded by tiny diamonds',
+		altImage: 'product-emerald-stud-earrings-alt',
+		gift: false,
 		badge: 'New',
 		description: 'Round emeralds with a diamond halo — small, bright, unmistakably green.',
 		long: [
@@ -236,6 +261,8 @@ export const products: Product[] = [
 		reviews: 39,
 		image: 'product-celestial-tennis-necklace',
 		imageAlt: 'Gold tennis necklace with a row of sparkling diamonds',
+		altImage: 'product-celestial-tennis-necklace-alt',
+		gift: false,
 		description: 'A river of light for the neckline — our most dramatic necklace.',
 		long: [
 			'The Celestial Tennis Necklace is a continuous line of brilliant stones that sits along the collarbone and catches light with every turn of the head.',
@@ -254,6 +281,8 @@ export const products: Product[] = [
 		reviews: 52,
 		image: 'product-vintage-gold-band',
 		imageAlt: 'Vintage-inspired gold band ring with intricate milgrain engraving and small diamonds',
+		altImage: 'product-vintage-gold-band-alt',
+		gift: false,
 		description: 'Milgrain edges and a hand-engraved feel — old soul, new ring.',
 		long: [
 			'The Vintage Gold Band takes its cues from rings made a century ago: milgrain edges, fine engraving, and a row of small stones set low into the band.',
@@ -272,6 +301,8 @@ export const products: Product[] = [
 		reviews: 48,
 		image: 'product-infinity-charm-bracelet',
 		imageAlt: 'Delicate gold charm bracelet with a small infinity charm and tiny diamonds',
+		altImage: 'product-infinity-charm-bracelet-alt',
+		gift: true,
 		description: 'A delicate chain, an infinity charm, and room for the charms that follow.',
 		long: [
 			'The Infinity Charm Bracelet starts with a fine gold chain and a small pavé infinity charm — and leaves room for the charms you add over the years.',
@@ -290,6 +321,8 @@ export const products: Product[] = [
 		reviews: 66,
 		image: 'product-emerald-halo-ring',
 		imageAlt: 'Gold ring with an oval emerald centre stone surrounded by a halo of small diamonds',
+		altImage: 'product-emerald-halo-ring-alt',
+		gift: false,
 		description: 'An oval emerald in a halo of diamonds — green, gold, and unmistakable.',
 		long: [
 			'The Emerald Halo Ring centres an oval emerald in a halo of small white stones, on a polished gold band. The halo makes the emerald look larger and brighter — green framed in light.',
@@ -570,3 +603,259 @@ export const offers = [
 export function usd(amount: number): string {
 	return amount.toLocaleString('en-US', { style: 'currency', currency: 'USD' });
 }
+
+// Products featured in at least one curated collection (see `collections`).
+const collectionProductSlugs = new Set(collections.flatMap((c) => c.productSlugs));
+
+export function inAnyCollection(slug: string): boolean {
+	return collectionProductSlugs.has(slug);
+}
+
+// Sensible default variant for quick-add: first metal + default size,
+// formatted the same way the product page shows it (e.g. "Size 7").
+export function defaultOption(product: Product): string {
+	const metal = product.metals[0] ?? 'Yellow Gold';
+	const size = product.sizes[0] ?? 'One size';
+	const sizeLabel = /^\d+$/.test(size) ? `Size ${size}` : size;
+	return `${metal} · ${sizeLabel}`;
+}
+
+// 4 interest-free instalments (Klarna-style BNPL line, mock — no real credit).
+export function instalment(amount: number): string {
+	return usd(amount / 4);
+}
+
+// ─── Workstream B — new pages data (appended; existing data untouched) ───
+
+// Gift wrap at checkout: flat mock fee, added to the order total there.
+export const giftWrapFee = 5;
+
+// One reusable sourcing line, shown on every product page and the
+// sustainability page — the same words everywhere, so claims stay consistent.
+export const sourcingLine =
+	'Crafted with 100% recycled gold and a lab-created stone — conflict-free by design.';
+
+// ─── Guides ────────────────────────────────────────────────────────────────
+export type Guide = {
+	slug: string;
+	title: string;
+	blurb: string;
+	image: string;
+	imageAlt: string;
+	href: string;
+	readTime: string;
+};
+
+export const guides: Guide[] = [
+	{
+		slug: 'engagement-ring-guide',
+		title: 'The Engagement Ring Guide',
+		blurb: 'The 4Cs, shapes, settings and a realistic budget — everything you need before you ask the question.',
+		image: 'guide-engagement',
+		imageAlt: 'Gold solitaire engagement ring in its open emerald gift box on a cream background',
+		href: '/guides/engagement-ring-guide',
+		readTime: '8 min read'
+	},
+	{
+		slug: 'metals-gemstones',
+		title: 'Metals & Gemstones',
+		blurb: '14k and 18k gold, vermeil vs solid vs gold-fill, platinum — and lab vs natural stones, explained plainly.',
+		image: 'guide-metals',
+		imageAlt: 'A row of gold, white gold and rose gold bands beside loose green and white gemstones',
+		href: '/guides/metals-gemstones',
+		readTime: '7 min read'
+	},
+	{
+		slug: 'ring-size-finder',
+		title: 'Ring Size Finder',
+		blurb: 'A printable ring sizer, measuring tips and what to do when you fall between two sizes.',
+		image: 'guide-engagement',
+		imageAlt: 'Gold solitaire engagement ring in its open emerald gift box on a cream background',
+		href: '/guides/ring-size-finder',
+		readTime: '4 min read'
+	},
+	{
+		slug: 'layering',
+		title: 'The Layering Guide',
+		blurb: 'How to stack necklaces, mix metals and layer chains without tangling — shoppable, straight from the shop.',
+		image: 'guide-metals',
+		imageAlt: 'A row of gold, white gold and rose gold bands beside loose green and white gemstones',
+		href: '/shop?category=necklaces',
+		readTime: 'Shop the look'
+	}
+];
+
+// Printable ring sizer: inside diameter (mm) of each US size, matching the
+// size-guide chart — the finder draws these circles at true size.
+export const ringSizerSizes = [
+	{ us: '5', diameter: 15.7 },
+	{ us: '5½', diameter: 16.1 },
+	{ us: '6', diameter: 16.5 },
+	{ us: '6½', diameter: 16.9 },
+	{ us: '7', diameter: 17.3 },
+	{ us: '7½', diameter: 17.7 },
+	{ us: '8', diameter: 18.2 },
+	{ us: '8½', diameter: 18.6 },
+	{ us: '9', diameter: 18.9 }
+];
+
+// ─── Warranty & Authenticity ───────────────────────────────────────────────
+// The promise, word for word as it appears on every product page:
+// "Lifetime warranty — Craftsmanship, covered for life".
+export const warrantyPromise = 'Lifetime warranty — craftsmanship, covered for life.';
+
+export const warrantyCovers = [
+	'Manufacturing defects in craftsmanship — a loose prong, a faulty clasp, a weak link — repaired or replaced free, for life.',
+	'Stone security: if a stone loosens under normal wear, we re-seat it free.',
+	'Complimentary cleaning and inspection once a year, in store or by mail.',
+	'Free first resize within 30 days of purchase (then $15 plus shipping).'
+];
+
+export const warrantyExcludes = [
+	'Normal wear: scratches, tarnish and the softening of a finish over time.',
+	'Damage from accidents, misuse or harsh chemicals (including ultrasonic cleaners on emerald).',
+	'Loss or theft — keep your order number and consider personal jewellery insurance.',
+	'Engraved or personalised pieces are final sale and cannot be returned — but the lifetime craftsmanship warranty still covers their making.'
+];
+
+export const warrantyClaimSteps = [
+	{ title: 'Email us', detail: 'Send your order number and a photo of the issue to hello@aureljewels.com.' },
+	{ title: 'We assess it', detail: 'Our atelier replies within 2 business days with a prepaid label if we need the piece back.' },
+	{ title: 'We repair it', detail: 'Most repairs take 5–10 business days. If a piece cannot be repaired, we replace it.' }
+];
+
+export const authenticityPoints = [
+	{ title: 'GIA / IGI certification', detail: 'Every lab-created diamond over 0.5 ct ships with a GIA or IGI certificate stating its cut, colour, clarity and carat — the same grading labs used for mined stones.' },
+	{ title: 'Hallmarking', detail: 'Every gold piece is stamped with its fineness (14k) and the Aurel hallmark, so what you bought is verifiable on the piece itself.' },
+	{ title: 'Insured shipping', detail: 'Every order ships fully insured, tracked and signature-on-delivery for orders over $150 — if it is lost in transit, we replace it.' }
+];
+
+// ─── Sustainability & Ethics ───────────────────────────────────────────────
+export const sustainabilityClaims = [
+	{ stat: '100%', label: 'recycled gold', detail: 'Every gram of gold in Aurel pieces is recycled 14k gold — no newly mined gold in any piece.' },
+	{ stat: '100%', label: 'lab-created stones', detail: 'Our diamonds and emeralds are grown in a lab, identical to mined stones, with no mining behind them.' },
+	{ stat: '0', label: 'conflict stones', detail: 'No mined diamonds, no conflict sourcing. Our suppliers are audited annually for fair labour practices.' },
+	{ stat: '100%', label: 'plastic-free packaging', detail: 'FSC-certified recycled paper, a reusable pouch and our signature emerald gift box — no plastic anywhere.' }
+];
+
+// ─── Bespoke — mock builder prices (USD) ───────────────────────────────────
+export type BespokeSetting = { id: string; name: string; price: number; blurb: string };
+export const bespokeSettings: BespokeSetting[] = [
+	{ id: 'solitaire', name: 'Solitaire', price: 180, blurb: 'One stone, held high — the classic.' },
+	{ id: 'halo', name: 'Halo', price: 320, blurb: 'A ring of small stones makes the centre look larger.' },
+	{ id: 'pave', name: 'Pavé band', price: 450, blurb: 'Sparkle all the way around the band.' },
+	{ id: 'three-stone', name: 'Three-stone', price: 390, blurb: 'Past, present and future in three stones.' }
+];
+
+export type BespokeStone = { id: string; name: string; price: number; blurb: string };
+export const bespokeStones: BespokeStone[] = [
+	{ id: 'lab-diamond', name: 'Lab diamond, 1 ct', price: 850, blurb: 'Brilliant, colourless, certified GIA / IGI.' },
+	{ id: 'lab-emerald', name: 'Lab emerald, oval', price: 420, blurb: 'Deep green — our signature stone.' },
+	{ id: 'lab-sapphire', name: 'Lab sapphire, round', price: 380, blurb: 'Cornflower blue, hard-wearing for every day.' },
+	{ id: 'cz', name: 'Cubic zirconia', price: 90, blurb: 'All the sparkle, a fraction of the price.' },
+	{ id: 'pearl', name: 'Freshwater pearl', price: 120, blurb: 'Soft lustre — a quiet classic.' }
+];
+
+export type BespokeMetal = { id: string; name: string; price: number; blurb: string };
+export const bespokeMetals: BespokeMetal[] = [
+	{ id: 'yellow-14k', name: '14k yellow gold', price: 0, blurb: 'Warm and classic — included in the base price.' },
+	{ id: 'white-14k', name: '14k white gold', price: 0, blurb: 'Cool and modern — included in the base price.' },
+	{ id: 'rose-14k', name: '14k rose gold', price: 0, blurb: 'Soft and romantic — included in the base price.' },
+	{ id: 'platinum', name: 'Platinum', price: 450, blurb: 'Heavier, rarer, hypoallergenic — adds $450.' }
+];
+
+// ─── Appointments ──────────────────────────────────────────────────────────
+export const appointmentPurposes = [
+	'Engagement ring consultation',
+	'Bespoke design',
+	'Wedding bands',
+	'Gift advice',
+	'Repairs & resizing',
+	'Just browsing'
+];
+
+export const appointmentSlots = [
+	'10:00 AM',
+	'11:00 AM',
+	'12:00 PM',
+	'1:00 PM',
+	'2:00 PM',
+	'3:00 PM',
+	'4:00 PM',
+	'5:00 PM',
+	'6:00 PM'
+];
+
+// ─── Lookbook ──────────────────────────────────────────────────────────────
+export type LookbookLook = {
+	id: string;
+	name: string;
+	blurb: string;
+	image: string;
+	imageAlt: string;
+	productSlugs: string[];
+};
+
+export const lookbookLooks: LookbookLook[] = [
+	{
+		id: 'bridal',
+		name: 'Bridal',
+		blurb: 'Solitaires, tennis necklaces and a halo ring — pieces that photograph beautifully and stay comfortable from the first look to the last dance.',
+		image: 'lookbook-bridal',
+		imageAlt: 'Bride wearing a gold solitaire ring, tennis necklace and bracelet',
+		productSlugs: ['eternal-spark-ring', 'aurora-solitaire-ring', 'celestial-tennis-necklace', 'radiant-tennis-bracelet']
+	},
+	{
+		id: 'evening',
+		name: 'Evening',
+		blurb: 'Green and gold under low light. The emerald necklace and a river of stones for the nights you dress up for.',
+		image: 'lookbook-evening',
+		imageAlt: 'Evening look with an emerald necklace, tennis bracelet and gold hoop earrings',
+		productSlugs: ['celestial-tennis-necklace', 'emerald-grace-necklace', 'radiant-tennis-bracelet', 'luminous-hoop-earrings']
+	},
+	{
+		id: 'everyday',
+		name: 'Everyday',
+		blurb: 'Hoops, a slim band, pearl drops and a charm bracelet — the pieces you reach for in the morning and forget you are wearing by noon.',
+		image: 'lookbook-everyday',
+		imageAlt: 'Everyday look with gold hoop earrings, a slim gold band and a charm bracelet',
+		productSlugs: ['luminous-hoop-earrings', 'pearl-drop-earrings', 'vintage-gold-band', 'infinity-charm-bracelet']
+	},
+	{
+		id: 'gifts',
+		name: 'Gifts',
+		blurb: 'Ready to give, beautifully boxed. An emerald pendant, pearl drops, a charm bracelet and a little luck — no sizing needed.',
+		image: 'lookbook-gifts',
+		imageAlt: 'Gift look with an emerald necklace, pearl earrings and a charm bracelet in the emerald gift box',
+		productSlugs: ['emerald-grace-necklace', 'pearl-drop-earrings', 'infinity-charm-bracelet', 'golden-clover-pendant']
+	}
+];
+
+// ─── Rewards (Aurel Circle — mock loyalty) ─────────────────────────────────
+export const rewardsEarn = [
+	{ title: '1 point per $1', detail: 'Every dollar you spend earns a point — automatically, on every order.' },
+	{ title: '100 points = $5', detail: 'Redeem points for rewards at checkout. Points never expire while you stay a member.' },
+	{ title: '200 birthday points', detail: 'A birthday gift from us, every year — no purchase needed.' }
+];
+
+export const rewardsTiers = [
+	{ name: 'Insider', threshold: 'Join free', perk: '1 point per $1 · birthday points · early sale access' },
+	{ name: 'Muse', threshold: '$500 spent in a year', perk: '1.25 points per $1 · free resizing · members-only previews' },
+	{ name: 'Atelier', threshold: '$1,500 spent in a year', perk: '1.5 points per $1 · free resizing & cleaning · private bespoke consultations' }
+];
+
+// ─── Financing (mock — no real credit) ─────────────────────────────────────
+export const financingOptions = [
+	{
+		name: 'Klarna — Pay in 4',
+		detail: 'Split any order into 4 interest-free payments: the first at checkout, the rest every 2 weeks. No interest, no fees when you pay on time.'
+	},
+	{
+		name: 'Afterpay — Pay in 4',
+		detail: 'The same 4 interest-free payments, on the same schedule — pick whichever you already use at checkout.'
+	},
+	{
+		name: 'Affirm — Monthly payments',
+		detail: 'For larger pieces, spread the cost over 6 or 12 monthly payments. Your exact terms are shown at checkout before you commit — nothing is charged until you agree.'
+	}
+];

@@ -24,7 +24,7 @@
 		<section>
 			<h2 class="font-display text-2xl font-medium text-ink">About these terms</h2>
 			<p class="mt-3">
-				These terms apply to your use of aureljewels.com and to any order you place with Aurel
+				These terms apply to your use of aurel-jewels.pages.dev and to any order you place with Aurel
 				Jewels, 12 Mercer Street, SoHo, New York, NY 10013, United States. By using this website
 				or placing an order, you agree to these terms. If you do not agree, please do not use the
 				site.

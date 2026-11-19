@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { ArrowRight } from '@lucide/svelte';
 	import { collections, site } from '#lib/data/site.ts';
+	import Breadcrumbs from '#lib/components/Breadcrumbs.svelte';
 	import PageHero from '#lib/components/PageHero.svelte';
 	import Picture from '#lib/components/Picture.svelte';
 </script>
@@ -13,6 +14,8 @@
 	/>
 	<link rel="canonical" href="{site.url}/collections" />
 </svelte:head>
+
+<Breadcrumbs items={[{ label: 'Home', href: '/' }, { label: 'Collections' }]} />
 
 <PageHero
 	eyebrow="COLLECTIONS"

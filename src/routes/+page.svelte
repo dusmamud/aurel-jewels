@@ -93,9 +93,9 @@
 <!-- ─── Bestselling jewelry ─── -->
 <section class="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8" aria-labelledby="bestsellers-heading">
 	<div class="reveal flex items-end justify-between gap-4">
-		<h2 id="bestsellers-heading" class="font-display text-[clamp(1.6rem,3.5vw,2.2rem)] font-medium text-ink">Bestselling Jewelry</h2>
-		<a href="/shop" class="inline-flex min-h-12 items-center gap-1.5 text-sm font-bold tracking-wide text-emerald uppercase hover:text-emerald-deep">
-			View all products <ArrowRight size={16} aria-hidden="true" />
+		<h2 id="bestsellers-heading" class="min-w-0 font-display text-[clamp(1.6rem,3.5vw,2.2rem)] font-medium text-ink">Bestselling Jewelry</h2>
+		<a href="/shop" class="inline-flex min-h-12 shrink-0 items-center gap-1.5 text-sm font-bold tracking-wide whitespace-nowrap text-emerald uppercase hover:text-emerald-deep">
+			View all <ArrowRight size={16} aria-hidden="true" />
 		</a>
 	</div>
 	<div class="mt-8 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4">
@@ -195,7 +195,7 @@
 				<p class="text-xs font-bold tracking-[0.3em] text-gold-dark uppercase">Curated for you</p>
 				<h2 id="collections-heading" class="mt-2 font-display text-[clamp(1.6rem,3.5vw,2.2rem)] font-medium text-ink">Shop by Collection</h2>
 			</div>
-			<a href="/collections" class="hidden min-h-12 items-center gap-1.5 text-sm font-bold tracking-wide text-emerald uppercase hover:text-emerald-deep sm:inline-flex">
+			<a href="/collections" class="hidden min-h-12 shrink-0 items-center gap-1.5 text-sm font-bold tracking-wide whitespace-nowrap text-emerald uppercase hover:text-emerald-deep sm:inline-flex">
 				All collections <ArrowRight size={16} aria-hidden="true" />
 			</a>
 		</div>
@@ -255,7 +255,7 @@
 <section class="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8" aria-labelledby="journal-heading">
 	<div class="reveal flex items-end justify-between gap-4">
 		<h2 id="journal-heading" class="font-display text-[clamp(1.6rem,3.5vw,2.2rem)] font-medium text-ink">From the Journal</h2>
-		<a href="/blog" class="inline-flex min-h-12 items-center gap-1.5 text-sm font-bold tracking-wide text-emerald uppercase hover:text-emerald-deep">
+		<a href="/blog" class="inline-flex min-h-12 shrink-0 items-center gap-1.5 text-sm font-bold tracking-wide whitespace-nowrap text-emerald uppercase hover:text-emerald-deep">
 			All stories <ArrowRight size={16} aria-hidden="true" />
 		</a>
 	</div>

@@ -189,7 +189,7 @@
 		</p>
 		<a
 			href="/shop"
-			class="mt-6 inline-flex min-h-12 items-center rounded-full bg-gold px-7 text-base font-semibold text-white transition-colors duration-200 hover:bg-gold-dark"
+			class="mt-6 inline-flex min-h-12 items-center rounded-full bg-emerald px-7 text-base font-semibold text-white transition-colors duration-200 hover:bg-emerald-deep"
 		>
 			Shop the collection →
 		</a>

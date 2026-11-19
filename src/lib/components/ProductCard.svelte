@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { Check, Heart, ShoppingBag } from '@lucide/svelte';
 	import type { Product } from '#lib/data/site.ts';
-	import { usd } from '#lib/data/site.ts';
+	import { defaultOption, usd } from '#lib/data/site.ts';
 	import { addToCart } from '#lib/cart.svelte.ts';
 	import { toggleWishlist, wishlist } from '#lib/wishlist.svelte.ts';
 	import Picture from './Picture.svelte';
@@ -11,7 +11,9 @@
 	let added = $state(false);
 
 	function onAdd() {
-		addToCart(product.slug);
+		// Quick-add records the sensible default variant (first metal +
+		// default size) so the cart line shows metal/size, not an empty option.
+		addToCart(product.slug, defaultOption(product));
 		added = true;
 		window.setTimeout(() => (added = false), 1500);
 	}

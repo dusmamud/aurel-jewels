@@ -16,7 +16,7 @@
 	}
 </script>
 
-<section class="border-y border-line bg-sand" aria-label="Subscribe to our newsletter">
+<section id="newsletter" class="scroll-mt-24 border-y border-line bg-sand" aria-label="Subscribe to our newsletter">
 	<div class="mx-auto flex max-w-7xl flex-col items-start gap-6 px-4 py-10 sm:px-6 lg:flex-row lg:items-center lg:justify-between lg:px-8">
 		<div class="flex items-start gap-3">
 			<Mail size={26} class="mt-1 shrink-0 text-emerald" aria-hidden="true" />

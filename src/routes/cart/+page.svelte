@@ -1,9 +1,10 @@
 <script lang="ts">
 	import { ArrowRight, Minus, Plus, ShoppingBag, Trash2, Truck } from '@lucide/svelte';
-	import { site, usd } from '#lib/data/site.ts';
+	import { instalment, site, usd } from '#lib/data/site.ts';
 	import { cart, removeLine, setQty } from '#lib/cart.svelte.ts';
 	import PageHero from '#lib/components/PageHero.svelte';
 	import Picture from '#lib/components/Picture.svelte';
+	import TrustStrip from '#lib/components/TrustStrip.svelte';
 
 	const freeOver = site.freeShippingOver;
 	const remaining = $derived(Math.max(0, freeOver - cart.subtotal));
@@ -153,6 +154,15 @@
 						<dd class="font-bold text-ink">{usd(cart.total)}</dd>
 					</div>
 				</dl>
+				<p class="mt-3 text-sm text-muted">
+					or 4 interest-free payments of {instalment(cart.total)} with Klarna — subject to
+					approval · <a href="/financing" class="font-semibold text-emerald underline underline-offset-2">How financing works</a>
+				</p>
+				<p class="mt-3 rounded-2xl bg-emerald-soft px-4 py-3 text-center text-sm leading-relaxed text-ink">
+					<span class="font-bold text-emerald">Aurel Circle:</span> this order earns
+					<strong>{Math.floor(cart.subtotal)} points</strong> (1 per $1) — 100 points is $5 off.
+					<a href="/rewards" class="font-semibold text-emerald underline underline-offset-2">Rewards</a>
+				</p>
 				<a
 					href="/checkout"
 					class="mt-6 flex min-h-12 items-center justify-center gap-2 rounded-full bg-emerald text-sm font-bold tracking-wide text-white uppercase transition-colors duration-200 hover:bg-emerald-deep"
@@ -165,6 +175,9 @@
 				>
 					Continue shopping
 				</a>
+				<div class="mt-6">
+					<TrustStrip />
+				</div>
 				<p class="mt-4 text-center text-xs leading-relaxed text-muted">
 					Mock checkout — no payment is taken. 30-day free returns on every order.
 				</p>

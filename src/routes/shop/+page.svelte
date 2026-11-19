@@ -1,10 +1,11 @@
 <script lang="ts">
-	import { browser } from '$app/environment';
+	import { browser } from '$app/env';
 	import { goto } from '$app/navigation';
 	import { page } from '$app/state';
 	import { Search, X } from '@lucide/svelte';
-	import { categories, products } from '#lib/data/site.ts';
+	import { categories, inAnyCollection, products, site } from '#lib/data/site.ts';
 	import PageHero from '#lib/components/PageHero.svelte';
+	import Breadcrumbs from '#lib/components/Breadcrumbs.svelte';
 	import ProductCard from '#lib/components/ProductCard.svelte';
 
 	type SortKey = 'featured' | 'price-asc' | 'price-desc' | 'rating' | 'reviews';
@@ -58,7 +59,11 @@
 					p.category.toLowerCase().includes(query)
 			);
 		}
-		if (category !== 'all') list = list.filter((p) => p.category === category);
+		// 'gifts' = gift-tagged pieces; 'collections' = pieces in any curated
+		// collection; otherwise match the product's own category.
+		if (category === 'gifts') list = list.filter((p) => p.gift);
+		else if (category === 'collections') list = list.filter((p) => inAnyCollection(p.slug));
+		else if (category !== 'all') list = list.filter((p) => p.category === category);
 		if (priceFilter === 'under-75') list = list.filter((p) => p.price < 75);
 		if (priceFilter === '75-125') list = list.filter((p) => p.price >= 75 && p.price <= 125);
 		if (priceFilter === 'over-125') list = list.filter((p) => p.price > 125);
@@ -90,8 +95,10 @@
 		name="description"
 		content="Shop rings, necklaces, earrings and bracelets from Aurel Jewels. Free shipping over $50 and 30-day returns."
 	/>
-	<link rel="canonical" href="https://aureljewels.com/shop" />
+	<link rel="canonical" href="{site.url}/shop" />
 </svelte:head>
+
+<Breadcrumbs items={[{ label: 'Home', href: '/' }, { label: 'Shop' }]} />
 
 <PageHero
 	eyebrow="SHOP"
@@ -122,7 +129,7 @@
 				bind:value={searchText}
 				oninput={onSearchInput}
 				placeholder="Search rings, necklaces, emeralds…"
-				class="min-h-12 w-full rounded-full border border-line bg-white py-3 pr-10 pl-11 text-base text-ink placeholder:text-muted focus:border-emerald focus:outline-none"
+				class="min-h-12 w-full rounded-full border border-line bg-white py-3 pr-14 pl-11 text-base text-ink placeholder:text-muted focus:border-emerald focus:outline-none"
 			/>
 			{#if searchText}
 				<button
@@ -132,7 +139,7 @@
 						searchText = '';
 						updateParams({ q: '' });
 					}}
-					class="absolute top-1/2 right-2 flex h-9 w-9 -translate-y-1/2 items-center justify-center rounded-full text-muted hover:bg-sand hover:text-ink"
+					class="absolute top-1/2 right-1 flex h-12 w-12 -translate-y-1/2 items-center justify-center rounded-full text-muted hover:bg-sand hover:text-ink"
 				>
 					<X size={18} aria-hidden="true" />
 				</button>
