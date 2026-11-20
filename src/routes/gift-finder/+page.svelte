@@ -105,6 +105,7 @@
 		content="Not sure what to give? Answer four quick questions — who it is for, the occasion, your budget and their style — and we will match pieces from the Aurel shop."
 	/>
 	<link rel="canonical" href="{site.url}/gift-finder" />
+	<meta property="og:url" content="{site.url}/gift-finder" />
 </svelte:head>
 
 <Breadcrumbs items={[{ label: 'Home', href: '/' }, { label: 'Gift Finder' }]} />

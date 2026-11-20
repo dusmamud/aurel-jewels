@@ -15,6 +15,7 @@
 		content="Find your ring size at home: print our ring sizer, match a ring you already own to a true-size circle, and read our measuring tips and between-sizes advice."
 	/>
 	<link rel="canonical" href="{site.url}/guides/ring-size-finder" />
+	<meta property="og:url" content="{site.url}/guides/ring-size-finder" />
 </svelte:head>
 
 <Breadcrumbs

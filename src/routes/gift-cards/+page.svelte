@@ -26,6 +26,7 @@
 		content="Give an Aurel Jewels gift card from $50 — valid 12 months on any piece. Digital delivery by email or a printed card, with your message included."
 	/>
 	<link rel="canonical" href="{site.url}/gift-cards" />
+	<meta property="og:url" content="{site.url}/gift-cards" />
 </svelte:head>
 
 <PageHero

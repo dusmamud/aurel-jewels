@@ -6,6 +6,11 @@
 	let email = $state('');
 	let error = $state('');
 	let searched = $state(false);
+	let returnOpen = $state(false);
+	let returnType = $state<'return' | 'exchange'>('return');
+	let returnReason = $state('Changed my mind');
+	let returnDone = $state(false);
+	let returnRef = $state('');
 
 	const steps = [
 		{ label: 'Order placed', detail: 'We received your order and are preparing it in the atelier.' },
@@ -39,6 +44,7 @@
 		content="Check the status of your Aurel Jewels order with your order number and email address."
 	/>
 	<link rel="canonical" href="{site.url}/track-order" />
+	<meta property="og:url" content="{site.url}/track-order" />
 </svelte:head>
 
 <PageHero
@@ -145,6 +151,8 @@
 							searched = false;
 							orderNumber = '';
 							email = '';
+							returnOpen = false;
+							returnDone = false;
 						}}
 					>
 						Track another order
@@ -155,7 +163,71 @@
 					>
 						Need help? Contact us
 					</a>
+					<button
+						type="button"
+						onclick={() => (returnOpen = !returnOpen)}
+						aria-expanded={returnOpen}
+						class="inline-flex min-h-12 items-center rounded-full bg-white px-6 text-sm font-semibold text-ink ring-1 ring-line transition-colors duration-150 hover:ring-emerald"
+					>
+						Start a return or exchange
+					</button>
 				</div>
+				{#if returnOpen}
+					<div class="mt-6 rounded-3xl bg-cream p-5 ring-1 ring-line">
+						{#if returnDone}
+							<p class="font-semibold text-ink" role="status">Return started — reference {returnRef}</p>
+							<p class="mt-2 text-sm leading-relaxed text-muted">
+								A prepaid return label is on its way to {email}. Pack the unworn piece in its
+								original box, stick the label on, and drop it off. Refunds land 3–5 business days
+								after we receive it; exchanges ship as soon as yours arrives. Demo only — no label
+								was really sent.
+							</p>
+						{:else}
+							<h3 class="font-display text-lg font-semibold text-ink">Start a return or exchange</h3>
+							<p class="mt-1 text-sm text-muted">Unworn pieces within 30 days. Engraved pieces are final sale.</p>
+							<div class="mt-4 flex flex-wrap gap-2" role="group" aria-label="Return or exchange">
+								<button
+									type="button"
+									onclick={() => (returnType = 'return')}
+									aria-pressed={returnType === 'return'}
+									class="inline-flex min-h-12 items-center rounded-full px-5 text-sm font-semibold transition-colors duration-150 {returnType === 'return' ? 'bg-emerald text-white' : 'bg-white text-ink ring-1 ring-line hover:ring-emerald'}"
+								>
+									Refund
+								</button>
+								<button
+									type="button"
+									onclick={() => (returnType = 'exchange')}
+									aria-pressed={returnType === 'exchange'}
+									class="inline-flex min-h-12 items-center rounded-full px-5 text-sm font-semibold transition-colors duration-150 {returnType === 'exchange' ? 'bg-emerald text-white' : 'bg-white text-ink ring-1 ring-line hover:ring-emerald'}"
+								>
+									Exchange for another piece
+								</button>
+							</div>
+							<label for="return-reason" class="mt-4 mb-1.5 block text-sm font-semibold text-ink">Reason</label>
+							<select
+								id="return-reason"
+								bind:value={returnReason}
+								class="min-h-12 w-full rounded-2xl border border-line bg-white px-4 text-base text-ink focus:border-emerald focus:outline-none"
+							>
+								<option>Changed my mind</option>
+								<option>Wrong size</option>
+								<option>Not as expected</option>
+								<option>Arrived damaged</option>
+								<option>Gift — recipient prefers another piece</option>
+							</select>
+							<button
+								type="button"
+								onclick={() => {
+									returnRef = `AU-RTN-${Math.random().toString(36).slice(2, 8).toUpperCase()}`;
+									returnDone = true;
+								}}
+								class="mt-5 inline-flex min-h-12 items-center rounded-full bg-emerald px-6 text-sm font-semibold text-white transition-colors duration-200 hover:bg-emerald-deep"
+							>
+								Submit {returnType === 'return' ? 'return' : 'exchange'} request
+							</button>
+						{/if}
+					</div>
+				{/if}
 			</div>
 		{/if}
 	</div>

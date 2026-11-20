@@ -75,6 +75,7 @@
 		content="Book a free jewellery consultation at Aurel Jewels: in store at our SoHo boutique or virtual by video call. Pick a date and time — engagement rings, bespoke, gifts and repairs."
 	/>
 	<link rel="canonical" href="{site.url}/appointments" />
+	<meta property="og:url" content="{site.url}/appointments" />
 </svelte:head>
 
 <Breadcrumbs items={[{ label: 'Home', href: '/' }, { label: 'Book an Appointment' }]} />
@@ -146,9 +147,9 @@
 					submit();
 				}}
 			>
-				<fieldset class="min-w-0 rounded-3xl bg-white p-6 ring-1 ring-line sm:p-8">
-					<legend class="px-2 font-display text-lg font-semibold text-ink">How would you like to meet?</legend>
-					<div class="grid gap-3 sm:grid-cols-2">
+				<div role="group" aria-label="How would you like to meet?" class="min-w-0 rounded-3xl bg-white p-6 ring-1 ring-line sm:p-8">
+					<h2 class="font-display text-lg font-semibold text-ink">How would you like to meet?</h2>
+					<div class="mt-4 grid gap-3 sm:grid-cols-2">
 						<button
 							type="button"
 							aria-pressed={kind === 'in-store'}
@@ -182,28 +183,28 @@
 							</span>
 						</button>
 					</div>
-				</fieldset>
+				</div>
 
-				<fieldset class="min-w-0 rounded-3xl bg-white p-6 ring-1 ring-line sm:p-8">
-					<legend class="px-2 font-display text-lg font-semibold text-ink">What is it about?</legend>
+				<div role="group" aria-label="What is it about?" class="min-w-0 rounded-3xl bg-white p-6 ring-1 ring-line sm:p-8">
+					<h2 class="font-display text-lg font-semibold text-ink">What is it about?</h2>
 					<label for="apt-purpose" class="sr-only">Purpose of your appointment</label>
 					<select
 						id="apt-purpose"
 						bind:value={purpose}
-						class="min-h-12 w-full rounded-2xl border border-line bg-white px-4 text-base text-ink focus:border-emerald focus:outline-none"
+						class="mt-4 min-h-12 w-full rounded-2xl border border-line bg-white px-4 text-base text-ink focus:border-emerald focus:outline-none"
 					>
 						{#each appointmentPurposes as p (p)}
 							<option value={p}>{p}</option>
 						{/each}
 					</select>
-				</fieldset>
+				</div>
 
 				{#if kind === 'in-store'}
-					<fieldset class="min-w-0 rounded-3xl bg-white p-6 ring-1 ring-line sm:p-8">
-						<legend class="flex items-center gap-2 px-2 font-display text-lg font-semibold text-ink">
+					<div role="group" aria-label="Pick a date and time" class="min-w-0 rounded-3xl bg-white p-6 ring-1 ring-line sm:p-8">
+						<h2 class="flex items-center gap-2 font-display text-lg font-semibold text-ink">
 							<CalendarCheck size={20} aria-hidden="true" class="text-emerald" /> Pick a date &amp; time
-						</legend>
-						<label for="apt-date" class="mb-1.5 block text-sm font-semibold text-ink">Date</label>
+						</h2>
+						<label for="apt-date" class="mt-4 mb-1.5 block text-sm font-semibold text-ink">Date</label>
 						<input
 							id="apt-date"
 							type="date"
@@ -240,7 +241,7 @@
 						{:else}
 							<p class="mt-3 text-sm text-muted">Pick a date to see available times.</p>
 						{/if}
-					</fieldset>
+					</div>
 				{:else}
 					<div class="rounded-3xl bg-emerald-soft p-6 ring-1 ring-line sm:p-8">
 						<h2 class="font-display text-lg font-semibold text-ink">Virtual consultations</h2>
@@ -251,9 +252,9 @@
 					</div>
 				{/if}
 
-				<fieldset class="min-w-0 rounded-3xl bg-white p-6 ring-1 ring-line sm:p-8">
-					<legend class="px-2 font-display text-lg font-semibold text-ink">Your details</legend>
-					<div class="grid gap-4 sm:grid-cols-2">
+				<div role="group" aria-label="Your details" class="min-w-0 rounded-3xl bg-white p-6 ring-1 ring-line sm:p-8">
+					<h2 class="font-display text-lg font-semibold text-ink">Your details</h2>
+					<div class="mt-4 grid gap-4 sm:grid-cols-2">
 						<div>
 							<label for="apt-name" class="mb-1.5 block text-sm font-semibold text-ink">Your name</label>
 							<input
@@ -286,7 +287,7 @@
 					>
 						Confirm appointment
 					</button>
-				</fieldset>
+				</div>
 			</form>
 
 			<aside class="min-w-0">
@@ -307,6 +308,10 @@
 							<li>· No obligation — and no hard sell, ever.</li>
 							<li>· In store: {site.address}. Virtual: a link by email.</li>
 						</ul>
+						<p class="mt-4 text-sm leading-relaxed text-muted">
+							Coming in for a repair or a clean instead? Book a
+							<a href="/services" class="font-semibold text-emerald underline underline-offset-2">cleaning, polishing &amp; repair slot</a>.
+						</p>
 					</div>
 				</div>
 			</aside>

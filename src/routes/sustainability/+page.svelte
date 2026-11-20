@@ -12,6 +12,7 @@
 		content="How Aurel Jewels sources: 100% recycled gold, 100% lab-created stones, zero conflict stones and plastic-free packaging — specific claims, no vague promises."
 	/>
 	<link rel="canonical" href="{site.url}/sustainability" />
+	<meta property="og:url" content="{site.url}/sustainability" />
 </svelte:head>
 
 <Breadcrumbs
@@ -95,6 +96,12 @@
 						class="mt-4 flex min-h-12 items-center justify-center rounded-full bg-emerald text-sm font-bold tracking-wide text-white uppercase transition-colors duration-200 hover:bg-emerald-deep"
 					>
 						Shop all jewelry
+					</a>
+					<a
+						href="/trade-in"
+						class="mt-3 flex min-h-12 items-center justify-center rounded-full bg-white text-sm font-bold tracking-wide text-ink uppercase ring-1 ring-line transition-colors duration-150 hover:ring-emerald"
+					>
+						Trade in old gold for credit →
 					</a>
 				</div>
 			</div>

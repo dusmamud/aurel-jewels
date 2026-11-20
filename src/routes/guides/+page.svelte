@@ -11,6 +11,7 @@
 		content="Plain-English jewellery guides from Aurel Jewels: how to choose an engagement ring, metals and gemstones, finding your ring size, and layering necklaces."
 	/>
 	<link rel="canonical" href="{site.url}/guides" />
+	<meta property="og:url" content="{site.url}/guides" />
 </svelte:head>
 
 <PageHero

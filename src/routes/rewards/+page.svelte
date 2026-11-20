@@ -14,6 +14,7 @@
 		content="Aurel Circle rewards: earn 1 point per $1, 100 points is $5 off, plus birthday points and three tiers — Insider, Muse and Atelier."
 	/>
 	<link rel="canonical" href="{site.url}/rewards" />
+	<meta property="og:url" content="{site.url}/rewards" />
 </svelte:head>
 
 <Breadcrumbs items={[{ label: 'Home', href: '/' }, { label: 'Rewards' }]} />
@@ -51,6 +52,22 @@
 			</article>
 		{/each}
 	</div>
+
+	<article class="mt-10 rounded-3xl bg-emerald p-6 text-cream sm:p-8">
+		<h2 class="font-display text-2xl font-medium">Give $25, Get $25</h2>
+		<p class="mt-3 max-w-2xl leading-relaxed text-cream/80">
+			Share your referral link with a friend. When they place their first order, they get $25
+			off — and you get $25 off your next piece. There is no limit: bring five friends, earn
+			$125. Your link lives on your <a href="/account" class="font-semibold text-gold-light underline underline-offset-2">account page</a>;
+			share it anywhere.
+		</p>
+		<p class="mt-4 flex min-h-12 max-w-xl items-center rounded-2xl bg-white/15 px-4 text-sm font-semibold break-all">
+			aurel-jewels.pages.dev/rewards?ref=AUREL-FRIEND-25
+		</p>
+		<p class="mt-3 text-xs leading-relaxed text-cream/70">
+			Demo referral: the link and the $25 rewards are illustrative — no real credit is issued.
+		</p>
+	</article>
 
 	<article class="mt-10 rounded-3xl bg-emerald-soft p-6 ring-1 ring-line sm:p-8">
 		<h2 class="font-display text-2xl font-medium text-ink">How it works</h2>

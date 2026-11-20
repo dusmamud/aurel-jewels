@@ -13,6 +13,7 @@
 		content="Curated jewelry collections from Aurel Jewels: bridal, emerald, everyday elegance and gifts — each piece ready to give, beautifully boxed."
 	/>
 	<link rel="canonical" href="{site.url}/collections" />
+	<meta property="og:url" content="{site.url}/collections" />
 </svelte:head>
 
 <Breadcrumbs items={[{ label: 'Home', href: '/' }, { label: 'Collections' }]} />

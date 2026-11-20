@@ -1,6 +1,7 @@
 <script lang="ts">
-	import { Heart, X } from '@lucide/svelte';
+	import { Bell, Heart, X } from '@lucide/svelte';
 	import { products, site } from '#lib/data/site.ts';
+	import { alerts, togglePriceAlert } from '#lib/alerts.svelte.ts';
 	import { toggleWishlist, wishlist } from '#lib/wishlist.svelte.ts';
 	import PageHero from '#lib/components/PageHero.svelte';
 	import ProductCard from '#lib/components/ProductCard.svelte';
@@ -19,6 +20,7 @@
 		content="Your saved pieces at Aurel Jewels. Keep the ones you love in one place and add them to your cart when you are ready."
 	/>
 	<link rel="canonical" href="{site.url}/wishlist" />
+	<meta property="og:url" content="{site.url}/wishlist" />
 </svelte:head>
 
 <PageHero
@@ -37,6 +39,19 @@
 			{#each saved as product (product.slug)}
 				<div class="relative flex flex-col">
 					<ProductCard {product} />
+					<button
+						type="button"
+						onclick={() => togglePriceAlert(product.slug)}
+						aria-pressed={alerts.wantsPrice(product.slug)}
+						class="mt-3 inline-flex min-h-12 items-center justify-center gap-2 rounded-full px-4 text-sm font-semibold transition-colors duration-150 {alerts.wantsPrice(
+							product.slug
+						)
+							? 'bg-emerald text-white'
+							: 'bg-white text-ink ring-1 ring-line hover:text-emerald hover:ring-emerald'}"
+					>
+						<Bell size={17} aria-hidden="true" />
+						{alerts.wantsPrice(product.slug) ? 'Price-drop alerts on ✓' : 'Notify me of price drops'}
+					</button>
 					<button
 						type="button"
 						onclick={() => toggleWishlist(product.slug)}

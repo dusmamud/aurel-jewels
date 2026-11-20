@@ -1,14 +1,18 @@
 <script lang="ts">
-	import { Check, Heart, ShoppingBag } from '@lucide/svelte';
+	import { Check, Eye, Heart, Scale, ShoppingBag } from '@lucide/svelte';
 	import type { Product } from '#lib/data/site.ts';
 	import { defaultOption, usd } from '#lib/data/site.ts';
 	import { addToCart } from '#lib/cart.svelte.ts';
+	import { compareList, toggleCompare } from '#lib/compare.svelte.ts';
 	import { toggleWishlist, wishlist } from '#lib/wishlist.svelte.ts';
 	import Picture from './Picture.svelte';
+	import QuickView from './QuickView.svelte';
 	import Stars from './Stars.svelte';
 
 	let { product }: { product: Product } = $props();
 	let added = $state(false);
+	let quickOpen = $state(false);
+	let compareFull = $state(false);
 
 	function onAdd() {
 		// Quick-add records the sensible default variant (first metal +
@@ -16,6 +20,12 @@
 		addToCart(product.slug, defaultOption(product));
 		added = true;
 		window.setTimeout(() => (added = false), 1500);
+	}
+
+	function onCompare() {
+		compareFull = !toggleCompare(product.slug);
+		if (compareList.has(product.slug)) compareFull = false;
+		window.setTimeout(() => (compareFull = false), 2500);
 	}
 </script>
 
@@ -64,6 +74,33 @@
 				<span class="text-sm text-muted line-through">{usd(product.compareAt)}</span>
 			{/if}
 		</p>
+		<div class="flex flex-wrap items-center gap-2">
+			<button
+				type="button"
+				onclick={() => (quickOpen = true)}
+				class="inline-flex min-h-12 flex-1 items-center justify-center gap-1.5 rounded-full bg-white px-4 text-xs font-bold tracking-wide text-ink uppercase ring-1 ring-line transition-colors duration-150 hover:ring-emerald"
+			>
+				<Eye size={16} aria-hidden="true" /> Quick view
+			</button>
+			<button
+				type="button"
+				onclick={onCompare}
+				aria-pressed={compareList.has(product.slug)}
+				class="inline-flex min-h-12 flex-1 items-center justify-center gap-1.5 rounded-full px-4 text-xs font-bold tracking-wide uppercase transition-colors duration-150 {compareList.has(
+					product.slug
+				)
+					? 'bg-emerald text-white'
+					: 'bg-white text-ink ring-1 ring-line hover:ring-emerald'}"
+			>
+				<Scale size={16} aria-hidden="true" />
+				{compareList.has(product.slug) ? 'Compared ✓' : 'Compare'}
+			</button>
+		</div>
+		{#if compareFull}
+			<p class="text-xs font-semibold text-red-700" role="status">
+				Compare holds up to 3 pieces — remove one on the <a href="/compare" class="underline underline-offset-2">compare page</a>.
+			</p>
+		{/if}
 		<button
 			type="button"
 			onclick={onAdd}
@@ -79,4 +116,5 @@
 			{/if}
 		</button>
 	</div>
+	<QuickView {product} open={quickOpen} onClose={() => (quickOpen = false)} />
 </article>

@@ -1,8 +1,10 @@
 <script lang="ts">
-	import { ArrowRight, Diamond, Gem, Heart, Leaf, RotateCcw, ShieldCheck, Truck } from '@lucide/svelte';
-	import { bestsellers, blogPosts, categories, collections, products, testimonials } from '#lib/data/site.ts';
+	import { ArrowRight, Diamond, Gem, Heart, Leaf, RotateCcw, ShieldCheck, ShoppingBag, Truck, X } from '@lucide/svelte';
+	import { bestsellers, blogPosts, categories, collections, products, site, testimonials } from '#lib/data/site.ts';
+	import { cart } from '#lib/cart.svelte.ts';
 	import Picture from '#lib/components/Picture.svelte';
 	import ProductCard from '#lib/components/ProductCard.svelte';
+	import RecentlyViewed from '#lib/components/RecentlyViewed.svelte';
 	import Stars from '#lib/components/Stars.svelte';
 
 	const trustItems = [
@@ -11,7 +13,39 @@
 		{ icon: ShieldCheck, title: 'Secure Payment', detail: '100% secure checkout' },
 		{ icon: Gem, title: 'Premium Quality', detail: 'Ethically sourced materials' }
 	];
+
+	// Cart-reminder nudge: on a return visit (a previous visit is recorded
+	// in localStorage), remind the shopper what they left in their bag.
+	let showCartReminder = $state(false);
+	$effect(() => {
+		try {
+			const returning = window.localStorage.getItem('aurel-return-visit-v1') === '1';
+			const dismissed = window.localStorage.getItem('aurel-cart-reminder-dismissed-v1') === '1';
+			showCartReminder = returning && !dismissed && cart.count > 0;
+			window.localStorage.setItem('aurel-return-visit-v1', '1');
+		} catch {
+			showCartReminder = false;
+		}
+	});
+	function dismissReminder() {
+		showCartReminder = false;
+		try {
+			window.localStorage.setItem('aurel-cart-reminder-dismissed-v1', '1');
+		} catch {
+			// Storage unavailable — the banner just hides for this session.
+		}
+	}
 </script>
+
+<svelte:head>
+	<title>Aurel Jewels — Fine Jewelry for a Brighter You</title>
+	<meta
+		name="description"
+		content="Timeless fine jewelry crafted for everyday moments and life's most special ones — rings, necklaces, earrings and bracelets, free shipping over $50 and 30-day returns."
+	/>
+	<link rel="canonical" href={site.url} />
+	<meta property="og:url" content={site.url} />
+</svelte:head>
 
 <!-- ─── Hero ─── -->
 <section class="relative overflow-hidden bg-cream">
@@ -66,6 +100,26 @@
 </section>
 
 <!-- ─── Browse by category ─── -->
+{#if showCartReminder}
+	<div class="mx-auto max-w-7xl px-4 pt-6 sm:px-6 lg:px-8" role="status">
+		<div class="flex flex-wrap items-center gap-3 rounded-3xl bg-emerald-soft px-5 py-4 ring-1 ring-line">
+			<ShoppingBag size={20} aria-hidden="true" class="shrink-0 text-emerald" />
+			<p class="min-w-0 flex-1 text-[0.95rem] leading-relaxed text-ink">
+				Welcome back — you left <strong>{cart.count} {cart.count === 1 ? 'piece' : 'pieces'}</strong> in
+				your bag.
+				<a href="/cart" class="font-semibold text-emerald underline underline-offset-2">Pick up where you left off →</a>
+			</p>
+			<button
+				type="button"
+				onclick={dismissReminder}
+				aria-label="Dismiss cart reminder"
+				class="flex h-11 w-11 shrink-0 items-center justify-center rounded-full text-muted transition-colors duration-150 hover:bg-white hover:text-ink"
+			>
+				<X size={18} aria-hidden="true" />
+			</button>
+		</div>
+	</div>
+{/if}
 <section class="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8" aria-labelledby="categories-heading">
 	<h2 id="categories-heading" class="reveal text-center text-xs font-bold tracking-[0.3em] text-ink uppercase">Browse by Category</h2>
 	<div class="mt-8 grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-6">
@@ -104,6 +158,8 @@
 		{/each}
 	</div>
 </section>
+
+<RecentlyViewed />
 
 <!-- ─── Gift banner ─── -->
 <section class="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8" aria-labelledby="gift-heading">

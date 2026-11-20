@@ -19,6 +19,7 @@
 	<title>{collection.name} — Aurel Jewels</title>
 	<meta name="description" content={collection.description} />
 	<link rel="canonical" href="{site.url}/collections/{collection.slug}" />
+	<meta property="og:url" content="{site.url}/collections/{collection.slug}" />
 </svelte:head>
 
 <!-- Collection header with image -->

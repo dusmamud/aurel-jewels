@@ -1,7 +1,8 @@
 <script lang="ts">
 	import { ArrowLeft, ArrowRight, Check, CheckCircle2, CreditCard, ShoppingBag } from '@lucide/svelte';
-	import { instalment, giftWrapFee, site, usd } from '#lib/data/site.ts';
+	import { instalment, giftWrapFee, lifetimeCareFee, site, usd } from '#lib/data/site.ts';
 	import { cart, clearCart } from '#lib/cart.svelte.ts';
+	import { saveOrder } from '#lib/orders.svelte.ts';
 	import PageHero from '#lib/components/PageHero.svelte';
 	import Picture from '#lib/components/Picture.svelte';
 	import TrustStrip from '#lib/components/TrustStrip.svelte';
@@ -21,6 +22,8 @@
 	let errors = $state<Errors>({});
 	let giftWrap = $state(false);
 	let giftMessage = $state('');
+	let giftCardStyle = $state<'emerald' | 'cream' | 'gold'>('emerald');
+	let fulfilment = $state<'shipping' | 'pickup'>('shipping');
 
 	// Snapshot taken at order time so the confirmation survives clearCart().
 	let orderRef = $state('');
@@ -29,9 +32,24 @@
 	let orderCount = $state(0);
 	let orderGiftWrap = $state(false);
 	let orderGiftMessage = $state('');
+	let orderGiftCardStyle = $state<'emerald' | 'cream' | 'gold'>('emerald');
+	let orderFulfilment = $state<'shipping' | 'pickup'>('shipping');
+	let orderLifetimeCare = $state(false);
+
+	// Lifetime Care flag set on the cart page (unchecked by default there).
+	let lifetimeCare = $state(false);
+	$effect(() => {
+		try {
+			lifetimeCare = window.localStorage.getItem('aurel-lifetime-care-v1') === '1';
+		} catch {
+			lifetimeCare = false;
+		}
+	});
 
 	const giftFee = $derived(giftWrap ? giftWrapFee : 0);
-	const checkoutTotal = $derived(cart.total + giftFee);
+	const careFee = $derived(lifetimeCare ? lifetimeCareFee : 0);
+	const shippingCost = $derived(fulfilment === 'pickup' ? 0 : cart.shipping);
+	const checkoutTotal = $derived(cart.subtotal + shippingCost + giftFee + careFee);
 
 	const steps = [
 		{ n: 1, label: 'Cart review' },
@@ -44,9 +62,11 @@
 		if (!name.trim()) next.name = 'Please enter your full name.';
 		if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim()))
 			next.email = 'Please enter a valid email address.';
-		if (!address.trim()) next.address = 'Please enter your street address.';
-		if (!city.trim()) next.city = 'Please enter your city.';
-		if (!/^\d{5}(-\d{4})?$/.test(zip.trim())) next.zip = 'Please enter a valid 5-digit ZIP code.';
+		if (fulfilment === 'shipping') {
+			if (!address.trim()) next.address = 'Please enter your street address.';
+			if (!city.trim()) next.city = 'Please enter your city.';
+			if (!/^\d{5}(-\d{4})?$/.test(zip.trim())) next.zip = 'Please enter a valid 5-digit ZIP code.';
+		}
 		if (!cardName.trim()) next.cardName = 'Please enter the name on the card.';
 		if (!/^\d{13,19}$/.test(cardNumber.replace(/[\s-]/g, '')))
 			next.cardNumber = 'Please enter a valid card number (13–19 digits).';
@@ -71,10 +91,39 @@
 		orderCount = cart.count;
 		orderGiftWrap = giftWrap;
 		orderGiftMessage = giftMessage.trim();
+		orderGiftCardStyle = giftCardStyle;
+		orderFulfilment = fulfilment;
+		orderLifetimeCare = lifetimeCare;
+		const items = cart.lines.map((l) => `${l.qty} × ${l.name}`).join(', ');
+		saveOrder({
+			ref: orderRef,
+			date: new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }),
+			total: checkoutTotal,
+			count: cart.count,
+			items,
+			giftWrap,
+			giftMessage: giftMessage.trim(),
+			eta,
+			fulfilment,
+			status: fulfilment === 'pickup' ? 'Ready for pickup' : 'Confirmed'
+		});
 		clearCart();
+		try {
+			window.localStorage.removeItem('aurel-lifetime-care-v1');
+		} catch {
+			// Storage unavailable — nothing to clear.
+		}
 		step = 3;
 		if (typeof window !== 'undefined') window.scrollTo({ top: 0, behavior: 'smooth' });
 	}
+
+	const cardPreviewClass = $derived(
+		giftCardStyle === 'emerald'
+			? 'bg-emerald text-cream'
+			: giftCardStyle === 'gold'
+				? 'bg-gold text-ink'
+				: 'bg-cream text-ink ring-1 ring-line'
+	);
 </script>
 
 <svelte:head>
@@ -84,6 +133,7 @@
 		content="Mock checkout at Aurel Jewels. Review your cart, enter shipping details and place your order — no real payment is taken."
 	/>
 	<link rel="canonical" href="{site.url}/checkout" />
+	<meta property="og:url" content="{site.url}/checkout" />
 </svelte:head>
 
 <PageHero
@@ -159,12 +209,10 @@
 							</li>
 						{/each}
 					</ul>
-					<!-- Make it a gift: wrap + hand-written message -->
-					<fieldset class="mt-6 min-w-0 rounded-3xl bg-white p-6 ring-1 ring-line">
-						<legend class="px-2 font-display text-lg font-semibold text-ink">
-							Make it a gift
-						</legend>
-						<label for="co-gift-wrap" class="flex min-h-12 cursor-pointer items-start gap-3">
+					<!-- Make it a gift: wrap + hand-written message with card preview -->
+					<div role="group" aria-label="Make it a gift" class="mt-6 min-w-0 rounded-3xl bg-white p-6 ring-1 ring-line">
+						<h2 class="font-display text-lg font-semibold text-ink">Make it a gift</h2>
+						<label for="co-gift-wrap" class="mt-4 flex min-h-12 cursor-pointer items-start gap-3">
 							<input
 								id="co-gift-wrap"
 								type="checkbox"
@@ -192,7 +240,33 @@
 							></textarea>
 							<p class="mt-1.5 text-xs text-muted">{giftMessage.length}/200 characters</p>
 						</div>
-					</fieldset>
+						{#if giftMessage.trim()}
+							<div class="mt-4">
+								<p class="text-sm font-semibold text-ink">Card design</p>
+								<div class="mt-2 flex flex-wrap gap-2" role="group" aria-label="Gift card design">
+									{#each [{ id: 'emerald', label: 'Emerald' }, { id: 'cream', label: 'Cream' }, { id: 'gold', label: 'Gold' }] as style (style.id)}
+										<button
+											type="button"
+											onclick={() => (giftCardStyle = style.id as 'emerald' | 'cream' | 'gold')}
+											aria-pressed={giftCardStyle === style.id}
+											class="inline-flex min-h-12 items-center rounded-full px-5 text-sm font-semibold transition-colors duration-150 {giftCardStyle ===
+											style.id
+												? 'bg-emerald text-white'
+												: 'bg-white text-ink ring-1 ring-line hover:ring-emerald'}"
+										>
+											{style.label}
+										</button>
+									{/each}
+								</div>
+								<p class="mt-3 text-xs font-semibold tracking-wide text-muted uppercase">Preview — how your card will look</p>
+								<div class="mt-2 max-w-md rounded-2xl p-5 text-center shadow-sm {cardPreviewClass}">
+									<p class="text-[0.65rem] font-bold tracking-[0.3em] uppercase opacity-70">Aurel Jewels</p>
+									<p class="mt-3 font-display text-lg leading-relaxed italic">“{giftMessage.trim()}”</p>
+									<p class="mt-3 text-xs opacity-70">— with love, from {name.trim() || 'you'}</p>
+								</div>
+							</div>
+						{/if}
+					</div>
 					<p class="mt-4">
 						<a
 							href="/cart"
@@ -231,13 +305,19 @@
 					<div class="flex justify-between gap-4">
 						<dt class="text-muted">Shipping</dt>
 						<dd class="font-semibold text-ink">
-							{cart.shipping === 0 ? 'Free' : usd(cart.shipping)}
+							{shippingCost === 0 ? 'Free' : usd(shippingCost)}
 						</dd>
 					</div>
 					{#if giftWrap}
 						<div class="flex justify-between gap-4">
 							<dt class="text-muted">Gift wrap</dt>
 							<dd class="font-semibold text-ink">{usd(giftFee)}</dd>
+						</div>
+					{/if}
+					{#if lifetimeCare}
+						<div class="flex justify-between gap-4">
+							<dt class="text-muted">Lifetime Care</dt>
+							<dd class="font-semibold text-ink">{usd(careFee)}</dd>
 						</div>
 					{/if}
 					<div class="flex justify-between gap-4 border-t border-line pt-3 text-base">
@@ -256,10 +336,12 @@
 				>
 					Continue to shipping <ArrowRight size={17} aria-hidden="true" />
 				</button>
-				<p class="mt-3 text-center text-sm text-muted">
-					or 4 interest-free payments of {instalment(checkoutTotal)} with Klarna — subject to
-					approval · <a href="/financing" class="font-semibold text-emerald underline underline-offset-2">How financing works</a>
-				</p>
+				{#if checkoutTotal > 0}
+					<p class="mt-3 text-center text-sm text-muted">
+						or 4 interest-free payments of {instalment(checkoutTotal)} with Klarna — subject to
+						approval · <a href="/financing" class="font-semibold text-emerald underline underline-offset-2">How financing works</a>
+					</p>
+				{/if}
 				<div class="mt-6">
 					<TrustStrip />
 				</div>
@@ -278,9 +360,39 @@
 			>
 				<h2 class="font-display text-2xl font-medium text-ink">Step 2 — Shipping &amp; payment</h2>
 
-				<fieldset class="mt-6 min-w-0 rounded-3xl bg-white p-6 ring-1 ring-line">
-					<legend class="px-2 font-display text-lg font-semibold text-ink">Shipping details</legend>
-					<div class="grid gap-4 sm:grid-cols-2">
+				<div role="group" aria-label="How would you like to receive your order?" class="mt-6 min-w-0 rounded-3xl bg-white p-6 ring-1 ring-line">
+					<h2 class="font-display text-lg font-semibold text-ink">How would you like to receive it?</h2>
+					<div class="mt-4 grid gap-3 sm:grid-cols-2">
+						<button
+							type="button"
+							aria-pressed={fulfilment === 'shipping'}
+							onclick={() => (fulfilment = 'shipping')}
+							class="min-h-12 rounded-2xl p-4 text-left ring-1 transition-colors duration-150 {fulfilment ===
+							'shipping'
+								? 'bg-emerald-soft ring-emerald'
+								: 'bg-white ring-line hover:ring-emerald'}"
+						>
+							<span class="font-semibold text-ink">Ship to me</span>
+							<span class="mt-1 block text-sm text-muted">Free over $50 · 3–5 business days</span>
+						</button>
+						<button
+							type="button"
+							aria-pressed={fulfilment === 'pickup'}
+							onclick={() => (fulfilment = 'pickup')}
+							class="min-h-12 rounded-2xl p-4 text-left ring-1 transition-colors duration-150 {fulfilment ===
+							'pickup'
+								? 'bg-emerald-soft ring-emerald'
+								: 'bg-white ring-line hover:ring-emerald'}"
+						>
+							<span class="font-semibold text-ink">Pick up in store — free</span>
+							<span class="mt-1 block text-sm text-muted">Ready in 2 hours · {site.addressShort} (demo)</span>
+						</button>
+					</div>
+				</div>
+
+				<div role="group" aria-label="Shipping details" class="mt-6 min-w-0 rounded-3xl bg-white p-6 ring-1 ring-line">
+					<h2 class="font-display text-lg font-semibold text-ink">{fulfilment === 'pickup' ? 'Your details' : 'Shipping details'}</h2>
+					<div class="mt-4 grid gap-4 sm:grid-cols-2">
 						<div class="sm:col-span-2">
 							<label for="co-name" class="mb-1.5 block text-sm font-semibold text-ink">
 								Full name
@@ -317,68 +429,75 @@
 								<p id="co-email-error" class="mt-1.5 text-sm text-red-700">{errors.email}</p>
 							{/if}
 						</div>
-						<div class="sm:col-span-2">
-							<label for="co-address" class="mb-1.5 block text-sm font-semibold text-ink">
-								Street address
-							</label>
-							<input
-								id="co-address"
-								type="text"
-								bind:value={address}
-								autocomplete="street-address"
-								placeholder="12 Mercer Street, Apt 4"
-								aria-invalid={errors.address ? 'true' : undefined}
-								aria-describedby={errors.address ? 'co-address-error' : undefined}
-								class="min-h-12 w-full rounded-2xl border border-line bg-white px-4 text-base text-ink placeholder:text-muted focus:border-emerald focus:outline-none"
-							/>
-							{#if errors.address}
-								<p id="co-address-error" class="mt-1.5 text-sm text-red-700">{errors.address}</p>
-							{/if}
-						</div>
-						<div>
-							<label for="co-city" class="mb-1.5 block text-sm font-semibold text-ink">City</label>
-							<input
-								id="co-city"
-								type="text"
-								bind:value={city}
-								autocomplete="address-level2"
-								placeholder="New York"
-								aria-invalid={errors.city ? 'true' : undefined}
-								aria-describedby={errors.city ? 'co-city-error' : undefined}
-								class="min-h-12 w-full rounded-2xl border border-line bg-white px-4 text-base text-ink placeholder:text-muted focus:border-emerald focus:outline-none"
-							/>
-							{#if errors.city}
-								<p id="co-city-error" class="mt-1.5 text-sm text-red-700">{errors.city}</p>
-							{/if}
-						</div>
-						<div>
-							<label for="co-zip" class="mb-1.5 block text-sm font-semibold text-ink">
-								ZIP code
-							</label>
-							<input
-								id="co-zip"
-								type="text"
-								inputmode="numeric"
-								bind:value={zip}
-								autocomplete="postal-code"
-								placeholder="10013"
-								aria-invalid={errors.zip ? 'true' : undefined}
-								aria-describedby={errors.zip ? 'co-zip-error' : undefined}
-								class="min-h-12 w-full rounded-2xl border border-line bg-white px-4 text-base text-ink placeholder:text-muted focus:border-emerald focus:outline-none"
-							/>
-							{#if errors.zip}
-								<p id="co-zip-error" class="mt-1.5 text-sm text-red-700">{errors.zip}</p>
-							{/if}
-						</div>
+						{#if fulfilment === 'shipping'}
+							<div class="sm:col-span-2">
+								<label for="co-address" class="mb-1.5 block text-sm font-semibold text-ink">
+									Street address
+								</label>
+								<input
+									id="co-address"
+									type="text"
+									bind:value={address}
+									autocomplete="street-address"
+									placeholder="12 Mercer Street, Apt 4"
+									aria-invalid={errors.address ? 'true' : undefined}
+									aria-describedby={errors.address ? 'co-address-error' : undefined}
+									class="min-h-12 w-full rounded-2xl border border-line bg-white px-4 text-base text-ink placeholder:text-muted focus:border-emerald focus:outline-none"
+								/>
+								{#if errors.address}
+									<p id="co-address-error" class="mt-1.5 text-sm text-red-700">{errors.address}</p>
+								{/if}
+							</div>
+							<div>
+								<label for="co-city" class="mb-1.5 block text-sm font-semibold text-ink">City</label>
+								<input
+									id="co-city"
+									type="text"
+									bind:value={city}
+									autocomplete="address-level2"
+									placeholder="New York"
+									aria-invalid={errors.city ? 'true' : undefined}
+									aria-describedby={errors.city ? 'co-city-error' : undefined}
+									class="min-h-12 w-full rounded-2xl border border-line bg-white px-4 text-base text-ink placeholder:text-muted focus:border-emerald focus:outline-none"
+								/>
+								{#if errors.city}
+									<p id="co-city-error" class="mt-1.5 text-sm text-red-700">{errors.city}</p>
+								{/if}
+							</div>
+							<div>
+								<label for="co-zip" class="mb-1.5 block text-sm font-semibold text-ink">
+									ZIP code
+								</label>
+								<input
+									id="co-zip"
+									type="text"
+									inputmode="numeric"
+									bind:value={zip}
+									autocomplete="postal-code"
+									placeholder="10013"
+									aria-invalid={errors.zip ? 'true' : undefined}
+									aria-describedby={errors.zip ? 'co-zip-error' : undefined}
+									class="min-h-12 w-full rounded-2xl border border-line bg-white px-4 text-base text-ink placeholder:text-muted focus:border-emerald focus:outline-none"
+								/>
+								{#if errors.zip}
+									<p id="co-zip-error" class="mt-1.5 text-sm text-red-700">{errors.zip}</p>
+								{/if}
+							</div>
+						{:else}
+							<p class="text-sm leading-relaxed text-muted sm:col-span-2">
+								Pickup from <strong class="text-ink">{site.address}</strong> — {site.hours}. Bring
+								your order reference; no address needed.
+							</p>
+						{/if}
 					</div>
-				</fieldset>
+				</div>
 
-				<fieldset class="mt-6 min-w-0 rounded-3xl bg-white p-6 ring-1 ring-line">
-					<legend class="flex items-center gap-2 px-2 font-display text-lg font-semibold text-ink">
+				<div role="group" aria-label="Payment (demo — no charge)" class="mt-6 min-w-0 rounded-3xl bg-white p-6 ring-1 ring-line">
+					<h2 class="flex items-center gap-2 font-display text-lg font-semibold text-ink">
 						<CreditCard size={20} aria-hidden="true" class="text-emerald" /> Payment
 						<span class="text-sm font-normal text-muted">(demo — no charge)</span>
-					</legend>
-					<div class="grid gap-4 sm:grid-cols-2">
+					</h2>
+					<div class="mt-4 grid gap-4 sm:grid-cols-2">
 						<div class="sm:col-span-2">
 							<label for="co-card-name" class="mb-1.5 block text-sm font-semibold text-ink">
 								Name on card
@@ -463,7 +582,7 @@
 						Demo checkout only — never enter a real card number. No payment is processed and no
 						order is really placed.
 					</p>
-				</fieldset>
+				</div>
 
 				<div class="mt-6 flex flex-wrap gap-3">
 					<button
@@ -500,15 +619,21 @@
 						<dd class="font-semibold text-ink">{usd(cart.subtotal)}</dd>
 					</div>
 					<div class="flex justify-between gap-4">
-						<dt class="text-muted">Shipping</dt>
+						<dt class="text-muted">{fulfilment === 'pickup' ? 'Pickup' : 'Shipping'}</dt>
 						<dd class="font-semibold text-ink">
-							{cart.shipping === 0 ? 'Free' : usd(cart.shipping)}
+							{shippingCost === 0 ? 'Free' : usd(shippingCost)}
 						</dd>
 					</div>
 					{#if giftWrap}
 						<div class="flex justify-between gap-4">
 							<dt class="text-muted">Gift wrap</dt>
 							<dd class="font-semibold text-ink">{usd(giftFee)}</dd>
+						</div>
+					{/if}
+					{#if lifetimeCare}
+						<div class="flex justify-between gap-4">
+							<dt class="text-muted">Lifetime Care</dt>
+							<dd class="font-semibold text-ink">{usd(careFee)}</dd>
 						</div>
 					{/if}
 					<div class="flex justify-between gap-4 border-t border-line pt-3 text-base">
@@ -539,8 +664,10 @@
 					<dd class="font-bold break-all text-ink">{orderRef}</dd>
 				</div>
 				<div class="flex justify-between gap-4">
-					<dt class="text-muted">Estimated delivery</dt>
-					<dd class="font-bold text-ink">{eta}</dd>
+					<dt class="text-muted">{orderFulfilment === 'pickup' ? 'Pickup' : 'Estimated delivery'}</dt>
+					<dd class="font-bold text-ink">
+						{orderFulfilment === 'pickup' ? `Ready in 2 hours · ${site.addressShort}` : eta}
+					</dd>
 				</div>
 				<div class="flex justify-between gap-4">
 					<dt class="text-muted">Items</dt>
@@ -553,10 +680,16 @@
 					</div>
 					{#if orderGiftMessage}
 						<div class="flex flex-col gap-1">
-							<dt class="text-muted">Gift message</dt>
+							<dt class="text-muted">Gift message ({orderGiftCardStyle} card)</dt>
 							<dd class="font-medium break-words text-ink">“{orderGiftMessage}”</dd>
 						</div>
 					{/if}
+				{/if}
+				{#if orderLifetimeCare}
+					<div class="flex justify-between gap-4">
+						<dt class="text-muted">Lifetime Care</dt>
+						<dd class="font-bold text-ink">Yes — {usd(lifetimeCareFee)}</dd>
+					</div>
 				{/if}
 				<div class="flex justify-between gap-4 border-t border-line pt-3">
 					<dt class="font-bold text-ink">Total paid</dt>
@@ -566,12 +699,24 @@
 			<p class="mt-6 text-sm text-muted">
 				This was a demo checkout — no payment was taken and no real order was placed.
 			</p>
-			<a
-				href="/shop"
-				class="mt-8 inline-flex min-h-12 items-center rounded-full bg-emerald px-7 text-sm font-bold tracking-wide text-white uppercase transition-colors duration-200 hover:bg-emerald-deep"
-			>
-				Continue shopping
-			</a>
+			<div class="mt-6 flex flex-wrap justify-center gap-3">
+				<a
+					href="/shop"
+					class="inline-flex min-h-12 items-center rounded-full bg-emerald px-7 text-sm font-bold tracking-wide text-white uppercase transition-colors duration-200 hover:bg-emerald-deep"
+				>
+					Continue shopping
+				</a>
+				<a
+					href="/account"
+					class="inline-flex min-h-12 items-center rounded-full bg-white px-7 text-sm font-bold tracking-wide text-ink uppercase ring-1 ring-line transition-colors duration-150 hover:ring-emerald"
+				>
+					Save this order to my account
+				</a>
+			</div>
+			<p class="mt-4 text-xs text-muted">
+				Your order is already saved on this device — creating a free account keeps your orders,
+				wishlist and points in one place. Guest checkout stays guest-first, always.
+			</p>
 		</div>
 	{/if}
 </section>

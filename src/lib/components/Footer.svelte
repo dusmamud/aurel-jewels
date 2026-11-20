@@ -11,6 +11,9 @@
 		{ label: 'Earrings', href: '/shop?category=earrings' },
 		{ label: 'Bracelets', href: '/shop?category=bracelets' },
 		{ label: 'Gift Collection', href: '/collections/gifts' },
+		{ label: 'Gifts Under $100', href: '/gifts-under-100' },
+		{ label: 'New Arrivals', href: '/new-arrivals' },
+		{ label: 'Best Sellers', href: '/best-sellers' },
 		{ label: 'Lookbook', href: '/lookbook' },
 		{ label: 'Gift Finder', href: '/gift-finder' }
 	];
@@ -23,7 +26,13 @@
 		{ label: 'Track Your Order', href: '/track-order' },
 		{ label: 'Warranty & Authenticity', href: '/warranty' },
 		{ label: 'Financing', href: '/financing' },
-		{ label: 'Rewards', href: '/rewards' }
+		{ label: 'Rewards', href: '/rewards' },
+		{ label: 'Compare Pieces', href: '/compare' },
+		{ label: 'My Account', href: '/account' },
+		{ label: 'Visit Us', href: '/visit-us' },
+		{ label: 'Jewellery Services', href: '/services' },
+		{ label: 'Trade-In', href: '/trade-in' },
+		{ label: 'Accessibility', href: '/accessibility' }
 	];
 	const aboutLinks = [
 		{ label: 'Our Story', href: '/about' },
@@ -33,6 +42,8 @@
 		{ label: 'Book an Appointment', href: '/appointments' },
 		{ label: 'Guides', href: '/guides' },
 		{ label: 'Blog', href: '/blog' },
+		{ label: 'Press', href: '/press' },
+		{ label: 'Careers', href: '/careers' },
 		{ label: 'Contact Us', href: '/contact' }
 	];
 </script>
@@ -56,18 +67,18 @@
 			</p>
 			<p class="mt-2 flex items-center gap-2 text-sm text-cream/70">
 				<Phone size={15} class="shrink-0 text-gold-light" aria-hidden="true" />
-				<a href={site.phoneHref} class="hover:text-white">{site.phoneDisplay}</a>
+				<a href={site.phoneHref} class="inline-flex min-h-12 items-center hover:text-white">{site.phoneDisplay}</a>
 			</p>
 			<p class="mt-2 flex items-center gap-2 text-sm text-cream/70">
 				<Mail size={15} class="shrink-0 text-gold-light" aria-hidden="true" />
-				<a href="mailto:{site.email}" class="hover:text-white">{site.email}</a>
+				<a href="mailto:{site.email}" class="inline-flex min-h-12 items-center hover:text-white">{site.email}</a>
 			</p>
 		</div>
 		<nav aria-label="Shop">
 			<h3 class="text-sm font-bold tracking-[0.2em] text-gold-light uppercase">Shop</h3>
 			<ul class="mt-4 space-y-1">
 				{#each shopLinks as link}
-					<li><a href={link.href} class="inline-flex min-h-11 items-center text-[0.95rem] text-cream/80 hover:text-white">{link.label}</a></li>
+					<li><a href={link.href} class="inline-flex min-h-12 items-center px-2 text-[0.95rem] text-cream/80 hover:text-white">{link.label}</a></li>
 				{/each}
 			</ul>
 		</nav>
@@ -75,7 +86,7 @@
 			<h3 class="text-sm font-bold tracking-[0.2em] text-gold-light uppercase">Customer Care</h3>
 			<ul class="mt-4 space-y-1">
 				{#each careLinks as link}
-					<li><a href={link.href} class="inline-flex min-h-11 items-center text-[0.95rem] text-cream/80 hover:text-white">{link.label}</a></li>
+					<li><a href={link.href} class="inline-flex min-h-12 items-center px-2 text-[0.95rem] text-cream/80 hover:text-white">{link.label}</a></li>
 				{/each}
 			</ul>
 		</nav>
@@ -84,7 +95,7 @@
 				<h3 class="text-sm font-bold tracking-[0.2em] text-gold-light uppercase">About</h3>
 				<ul class="mt-4 space-y-1">
 					{#each aboutLinks as link}
-						<li><a href={link.href} class="inline-flex min-h-11 items-center text-[0.95rem] text-cream/80 hover:text-white">{link.label}</a></li>
+						<li><a href={link.href} class="inline-flex min-h-12 items-center px-2 text-[0.95rem] text-cream/80 hover:text-white">{link.label}</a></li>
 					{/each}
 				</ul>
 			</nav>
@@ -107,10 +118,17 @@
 	</div>
 	<div class="border-t border-cream/15 py-5 text-center text-sm text-cream/70">
 		<p class="flex flex-wrap justify-center gap-x-5 gap-y-2 px-4">
-			<a href="/privacy" class="min-h-11 content-center hover:text-white">Privacy Policy</a>
-			<a href="/terms" class="min-h-11 content-center hover:text-white">Terms of Service</a>
-			<a href="/faq" class="min-h-11 content-center hover:text-white">FAQ</a>
-			<a href="/sitemap.xml" class="min-h-11 content-center hover:text-white">Sitemap</a>
+			<a href="/privacy" class="min-h-12 content-center px-2 hover:text-white">Privacy Policy</a>
+			<button
+				type="button"
+				onclick={() => window.dispatchEvent(new CustomEvent('aurel:cookie-preferences'))}
+				class="min-h-12 content-center px-2 hover:text-white"
+			>
+				Privacy Choices
+			</button>
+			<a href="/terms" class="min-h-12 content-center px-2 hover:text-white">Terms of Service</a>
+			<a href="/faq" class="min-h-12 content-center px-2 hover:text-white">FAQ</a>
+			<a href="/sitemap.xml" class="min-h-12 content-center px-2 hover:text-white">Sitemap</a>
 		</p>
 		<p class="mt-2 px-4">© 2026 Aurel Jewels. All rights reserved. · Mock website — content for design approval.</p>
 	</div>

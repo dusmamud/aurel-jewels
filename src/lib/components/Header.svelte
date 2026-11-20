@@ -106,6 +106,18 @@
 		activeIndex = -1;
 	}
 
+	// Escape closes any open mega-menu from anywhere on the page (keyboard).
+	$effect(() => {
+		const onKey = (e: KeyboardEvent) => {
+			if (e.key === 'Escape') {
+				megaOpen = null;
+				if (searchOpen) closeSearch();
+			}
+		};
+		window.addEventListener('keydown', onKey);
+		return () => window.removeEventListener('keydown', onKey);
+	});
+
 	const shopCategories = categories.filter((c) => !['collections', 'gifts'].includes(c.id));
 	const featuredCollections = collections.slice(0, 3);
 </script>
@@ -254,6 +266,34 @@
 									class="mt-1 inline-flex min-h-12 items-center rounded-full px-4 text-sm font-bold text-emerald transition-colors duration-150 hover:bg-emerald-soft"
 								>
 									Bespoke &amp; custom →
+								</a>
+								<a
+									href="/occasions"
+									onclick={() => (megaOpen = null)}
+									class="mt-1 inline-flex min-h-12 items-center rounded-full px-4 text-sm font-bold text-emerald transition-colors duration-150 hover:bg-emerald-soft"
+								>
+									Shop by occasion →
+								</a>
+								<a
+									href="/gifts-under-100"
+									onclick={() => (megaOpen = null)}
+									class="mt-1 inline-flex min-h-12 items-center rounded-full px-4 text-sm font-bold text-emerald transition-colors duration-150 hover:bg-emerald-soft"
+								>
+									Gifts under $100 →
+								</a>
+								<a
+									href="/new-arrivals"
+									onclick={() => (megaOpen = null)}
+									class="mt-1 inline-flex min-h-12 items-center rounded-full px-4 text-sm font-bold text-emerald transition-colors duration-150 hover:bg-emerald-soft"
+								>
+									New arrivals →
+								</a>
+								<a
+									href="/best-sellers"
+									onclick={() => (megaOpen = null)}
+									class="mt-1 inline-flex min-h-12 items-center rounded-full px-4 text-sm font-bold text-emerald transition-colors duration-150 hover:bg-emerald-soft"
+								>
+									Best sellers →
 								</a>
 							</div>
 						</div>
@@ -412,8 +452,8 @@
 				<Search size={20} aria-hidden="true" />
 			</button>
 			<a
-				href="/track-order"
-				aria-label="My orders — track your order"
+				href="/account"
+				aria-label="My account"
 				class="hidden h-12 w-12 items-center justify-center rounded-full text-ink transition-colors duration-150 hover:text-emerald sm:flex"
 			>
 				<User size={20} aria-hidden="true" />
@@ -482,7 +522,7 @@
 						bind:value={query}
 						oninput={onSearchInput}
 						onkeydown={onSearchKeydown}
-						placeholder="Search rings, necklaces, emeralds…"
+						placeholder="Search jewelry"
 						class="min-h-12 flex-1 rounded-full border border-line bg-white px-5 text-base text-ink placeholder:text-muted"
 						autocomplete="off"
 					/>
@@ -588,6 +628,26 @@
 					onclick={() => (open = false)}
 				>
 					{item.label}
+				</a>
+			{/each}
+			{#each [
+				{ label: 'Occasions', href: '/occasions' },
+				{ label: 'Gifts under $100', href: '/gifts-under-100' },
+				{ label: 'New arrivals', href: '/new-arrivals' },
+				{ label: 'Best sellers', href: '/best-sellers' },
+				{ label: 'Compare', href: '/compare' },
+				{ label: 'Visit us', href: '/visit-us' },
+				{ label: 'Services', href: '/services' },
+				{ label: 'Trade-in', href: '/trade-in' },
+				{ label: 'My account', href: '/account' },
+				{ label: 'Accessibility', href: '/accessibility' }
+			] as extra}
+				<a
+					href={extra.href}
+					class="block min-h-12 content-center border-b border-line/60 py-2 text-base font-medium text-ink uppercase"
+					onclick={() => (open = false)}
+				>
+					{extra.label}
 				</a>
 			{/each}
 			<div class="mt-4 flex gap-3">

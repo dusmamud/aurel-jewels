@@ -10,6 +10,7 @@
 		content="How Aurel Jewels collects, uses and protects your personal information — and the rights you have over it."
 	/>
 	<link rel="canonical" href="{site.url}/privacy" />
+	<meta property="og:url" content="{site.url}/privacy" />
 </svelte:head>
 
 <PageHero

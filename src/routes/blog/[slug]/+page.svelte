@@ -12,6 +12,7 @@
 	<title>{post.title} — Aurel Jewels</title>
 	<meta name="description" content={post.excerpt} />
 	<link rel="canonical" href="{site.url}/blog/{post.slug}" />
+	<meta property="og:url" content="{site.url}/blog/{post.slug}" />
 </svelte:head>
 
 <article class="mx-auto max-w-3xl px-4 py-12 sm:px-6">

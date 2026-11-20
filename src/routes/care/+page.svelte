@@ -10,6 +10,7 @@
 		content="How to clean, store and care for your Aurel jewellery — including emerald-specific care, what to avoid, and when to bring a piece in for a check."
 	/>
 	<link rel="canonical" href="{site.url}/care" />
+	<meta property="og:url" content="{site.url}/care" />
 </svelte:head>
 
 <PageHero
@@ -75,6 +76,11 @@
 				lost stone. Visit the SoHo boutique any time during opening hours, or email
 				<a href="mailto:{site.email}" class="font-semibold break-all text-gold-dark underline underline-offset-4">{site.email}</a>
 				to book a check. Treated well, your Aurel pieces will only get more beautiful with time.
+			</p>
+			<p class="mt-4">
+				<a href="/services" class="inline-flex min-h-12 items-center rounded-full bg-emerald px-6 text-sm font-bold tracking-wide text-white uppercase transition-colors duration-200 hover:bg-emerald-deep">
+					Book cleaning, polishing &amp; repairs →
+				</a>
 			</p>
 		</article>
 

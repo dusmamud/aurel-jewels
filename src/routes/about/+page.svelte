@@ -11,6 +11,7 @@
 		content="Aurel Jewels began in a small SoHo atelier with a simple idea: fine jewellery, honestly made, for everyday brilliance. Meet the makers behind the pieces."
 	/>
 	<link rel="canonical" href="{site.url}/about" />
+	<meta property="og:url" content="{site.url}/about" />
 </svelte:head>
 
 <PageHero

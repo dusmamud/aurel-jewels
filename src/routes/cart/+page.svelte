@@ -1,14 +1,36 @@
 <script lang="ts">
-	import { ArrowRight, Minus, Plus, ShoppingBag, Trash2, Truck } from '@lucide/svelte';
-	import { instalment, site, usd } from '#lib/data/site.ts';
+	import { ArrowRight, Minus, Plus, ShieldCheck, ShoppingBag, Trash2, Truck } from '@lucide/svelte';
+	import { instalment, lifetimeCareFee, site, usd } from '#lib/data/site.ts';
 	import { cart, removeLine, setQty } from '#lib/cart.svelte.ts';
 	import PageHero from '#lib/components/PageHero.svelte';
 	import Picture from '#lib/components/Picture.svelte';
+	import RecentlyViewed from '#lib/components/RecentlyViewed.svelte';
 	import TrustStrip from '#lib/components/TrustStrip.svelte';
 
 	const freeOver = site.freeShippingOver;
 	const remaining = $derived(Math.max(0, freeOver - cart.subtotal));
 	const progress = $derived(cart.subtotal <= 0 ? 0 : Math.min(100, (cart.subtotal / freeOver) * 100));
+
+	// Lifetime Care extended warranty: optional, NEVER pre-ticked. Stored as a
+	// flag the checkout reads (see checkout/+page.svelte).
+	let lifetimeCare = $state(false);
+	$effect(() => {
+		try {
+			lifetimeCare = window.localStorage.getItem('aurel-lifetime-care-v1') === '1';
+		} catch {
+			lifetimeCare = false;
+		}
+	});
+	function onLifetimeCare() {
+		lifetimeCare = !lifetimeCare;
+		try {
+			if (lifetimeCare) window.localStorage.setItem('aurel-lifetime-care-v1', '1');
+			else window.localStorage.removeItem('aurel-lifetime-care-v1');
+		} catch {
+			// Storage unavailable: the choice still shows this session.
+		}
+	}
+	const displayTotal = $derived(cart.total + (lifetimeCare ? lifetimeCareFee : 0));
 </script>
 
 <svelte:head>
@@ -18,6 +40,7 @@
 		content="Review your Aurel Jewels cart. Free shipping over $50 and 30-day free returns on every order."
 	/>
 	<link rel="canonical" href="{site.url}/cart" />
+	<meta property="og:url" content="{site.url}/cart" />
 </svelte:head>
 
 <PageHero
@@ -133,6 +156,27 @@
 						</li>
 					{/each}
 				</ul>
+
+				<!-- Lifetime Care upsell — optional, never pre-ticked -->
+				<label for="cart-lifetime-care" class="mt-6 flex cursor-pointer items-start gap-3 rounded-3xl bg-white p-5 ring-1 ring-line sm:p-6">
+					<input
+						id="cart-lifetime-care"
+						type="checkbox"
+						checked={lifetimeCare}
+						onchange={onLifetimeCare}
+						class="mt-1 h-5 w-5 shrink-0 accent-emerald"
+					/>
+					<span class="text-[0.95rem] leading-relaxed text-ink">
+						<span class="flex items-center gap-2 font-semibold">
+							<ShieldCheck size={18} aria-hidden="true" class="text-emerald" />
+							Add Lifetime Care — {usd(lifetimeCareFee)}
+						</span>
+						<span class="mt-1 block text-sm text-muted">
+							Extended cover for life: free repairs, re-plating and stone re-setting beyond the
+							lifetime craftsmanship warranty. Optional — never added without your say-so.
+						</span>
+					</span>
+				</label>
 			</div>
 
 			<!-- Summary -->
@@ -149,13 +193,19 @@
 							{cart.shipping === 0 ? 'Free' : usd(cart.shipping)}
 						</dd>
 					</div>
+					{#if lifetimeCare}
+						<div class="flex justify-between gap-4">
+							<dt class="text-muted">Lifetime Care</dt>
+							<dd class="font-semibold text-ink">{usd(lifetimeCareFee)}</dd>
+						</div>
+					{/if}
 					<div class="flex justify-between gap-4 border-t border-line pt-3 text-base">
 						<dt class="font-bold text-ink">Total</dt>
-						<dd class="font-bold text-ink">{usd(cart.total)}</dd>
+						<dd class="font-bold text-ink">{usd(displayTotal)}</dd>
 					</div>
 				</dl>
 				<p class="mt-3 text-sm text-muted">
-					or 4 interest-free payments of {instalment(cart.total)} with Klarna — subject to
+					or 4 interest-free payments of {instalment(displayTotal)} with Klarna — subject to
 					approval · <a href="/financing" class="font-semibold text-emerald underline underline-offset-2">How financing works</a>
 				</p>
 				<p class="mt-3 rounded-2xl bg-emerald-soft px-4 py-3 text-center text-sm leading-relaxed text-ink">
@@ -204,3 +254,5 @@
 		</div>
 	{/if}
 </section>
+
+<RecentlyViewed />

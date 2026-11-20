@@ -30,7 +30,7 @@
 			<li class="flex min-w-0 items-center gap-1.5">
 				{#if i > 0}<span aria-hidden="true" class="text-muted">/</span>{/if}
 				{#if item.href && i < items.length - 1}
-					<a href={item.href} class="font-semibold text-emerald hover:text-emerald-deep">{item.label}</a>
+					<a href={item.href} class="inline-flex min-h-12 items-center px-2 font-semibold text-emerald hover:text-emerald-deep">{item.label}</a>
 				{:else}
 					<span aria-current="page" class="min-w-0 truncate font-medium text-muted">{item.label}</span>
 				{/if}

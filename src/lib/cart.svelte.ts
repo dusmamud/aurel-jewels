@@ -46,7 +46,7 @@ function isValidLine(value: unknown): value is CartLine {
 	);
 }
 
-/** Load the saved cart. Browser-only — call from a client $effect (see +layout). */
+/** Load the saved cart. Browser-only — call once from onMount (see +layout). */
 export function loadCart() {
 	if (typeof window === 'undefined') return;
 	try {

@@ -55,6 +55,7 @@
 		content="Design your own piece with Aurel's atelier: modify an existing design in 2–3 weeks, or create a bespoke piece from scratch in 4+ weeks with CAD visuals. Try the mock builder."
 	/>
 	<link rel="canonical" href="{site.url}/bespoke" />
+	<meta property="og:url" content="{site.url}/bespoke" />
 </svelte:head>
 
 <Breadcrumbs items={[{ label: 'Home', href: '/' }, { label: 'Custom & Bespoke' }]} />

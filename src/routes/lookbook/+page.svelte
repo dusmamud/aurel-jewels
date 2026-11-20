@@ -25,6 +25,7 @@
 		content="Shoppable looks from Aurel Jewels: bridal, evening, everyday and gifts — four styled edits, each with the exact pieces to shop the look."
 	/>
 	<link rel="canonical" href="{site.url}/lookbook" />
+	<meta property="og:url" content="{site.url}/lookbook" />
 </svelte:head>
 
 <Breadcrumbs items={[{ label: 'Home', href: '/' }, { label: 'Lookbook' }]} />

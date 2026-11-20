@@ -10,6 +10,7 @@
 		content="Free standard shipping on US orders over $50. Orders ship in 1–2 business days from New York, with express and Canada delivery options."
 	/>
 	<link rel="canonical" href="{site.url}/shipping" />
+	<meta property="og:url" content="{site.url}/shipping" />
 </svelte:head>
 
 <PageHero

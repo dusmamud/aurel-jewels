@@ -10,6 +10,7 @@
 		content="Terms for shopping with Aurel Jewels: orders, prices, shipping, returns, and the content rules for this website."
 	/>
 	<link rel="canonical" href="{site.url}/terms" />
+	<meta property="og:url" content="{site.url}/terms" />
 </svelte:head>
 
 <PageHero

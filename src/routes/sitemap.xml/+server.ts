@@ -32,7 +32,20 @@ const staticPages = [
 	{ path: '/rewards', priority: '0.6', changefreq: 'monthly' },
 	{ path: '/financing', priority: '0.5', changefreq: 'monthly' },
 	{ path: '/privacy', priority: '0.3', changefreq: 'yearly' },
-	{ path: '/terms', priority: '0.3', changefreq: 'yearly' }
+	{ path: '/terms', priority: '0.3', changefreq: 'yearly' },
+	{ path: '/accessibility', priority: '0.5', changefreq: 'monthly' },
+	{ path: '/occasions', priority: '0.7', changefreq: 'monthly' },
+	{ path: '/gifts-under-100', priority: '0.7', changefreq: 'monthly' },
+	{ path: '/gifts-under-250', priority: '0.7', changefreq: 'monthly' },
+	{ path: '/new-arrivals', priority: '0.7', changefreq: 'weekly' },
+	{ path: '/best-sellers', priority: '0.7', changefreq: 'weekly' },
+	{ path: '/compare', priority: '0.5', changefreq: 'monthly' },
+	{ path: '/services', priority: '0.6', changefreq: 'monthly' },
+	{ path: '/visit-us', priority: '0.6', changefreq: 'monthly' },
+	{ path: '/account', priority: '0.5', changefreq: 'monthly' },
+	{ path: '/trade-in', priority: '0.5', changefreq: 'monthly' },
+	{ path: '/press', priority: '0.3', changefreq: 'yearly' },
+	{ path: '/careers', priority: '0.4', changefreq: 'monthly' }
 ];
 
 export function GET() {

@@ -13,7 +13,7 @@ export const site = {
 	phoneDisplay: '+1 (212) 555-0148',
 	phoneHref: 'tel:+12125550148',
 	whatsappHref: 'https://wa.me/12125550148?text=Hi%20Aurel%20Jewels%2C%20I%20have%20a%20question%20about%20a%20piece',
-	email: 'hello@aureljewels.com',
+	email: 'hello@aurel-jewels.com',
 	address: '12 Mercer Street, SoHo, New York, NY 10013, United States',
 	addressShort: 'SoHo, New York',
 	hours: 'Mon – Sat: 10:00 AM – 7:00 PM ET',
@@ -24,8 +24,6 @@ export const site = {
 		facebook: 'https://www.facebook.com/aureljewels',
 		x: 'https://x.com/aureljewels'
 	},
-	mapEmbed:
-		'https://maps.google.com/maps?q=Mercer%20Street%2C%20SoHo%2C%20New%20York%2C%20NY%2010013&t=&z=15&ie=UTF8&iwloc=&output=embed',
 	freeShippingOver: 50,
 	shippingFlat: 6.95
 } as const;
@@ -76,6 +74,12 @@ export type Product = {
 	materials: string[];
 	metals: string[];
 	sizes: string[];
+	// Round-3 stock flags (mock data): 'low' shows honest low-stock copy,
+	// 'out-of-stock' swaps Add to cart for a notify-me form. Default is in stock.
+	stockStatus?: 'in-stock' | 'low' | 'out-of-stock';
+	// Lead time shown before payment; readyToShip false = made to order.
+	leadTime?: string;
+	readyToShip?: boolean;
 };
 
 export const products: Product[] = [
@@ -181,6 +185,7 @@ export const products: Product[] = [
 		altImage: 'product-aurora-solitaire-ring-alt',
 		gift: false,
 		badge: 'New',
+		stockStatus: 'low',
 		description: 'An oval solitaire on a pavé band — modern, elongated, quietly dramatic.',
 		long: [
 			'The Aurora Solitaire pairs an elongated oval centre stone with a pavé band, so the sparkle runs the whole way around the finger.',
@@ -221,6 +226,7 @@ export const products: Product[] = [
 		imageAlt: 'Pair of gold drop earrings with lustrous white pearls',
 		altImage: 'product-pearl-drop-earrings-alt',
 		gift: true,
+		stockStatus: 'low',
 		description: 'Lustrous freshwater pearls, dropped from a small gold stud.',
 		long: [
 			'The Pearl Drop Earrings are the quiet classic: a lustrous white pearl suspended from a small gold stud, moving gently as you move.',
@@ -323,6 +329,9 @@ export const products: Product[] = [
 		imageAlt: 'Gold ring with an oval emerald centre stone surrounded by a halo of small diamonds',
 		altImage: 'product-emerald-halo-ring-alt',
 		gift: false,
+		stockStatus: 'out-of-stock',
+		leadTime: 'Made to order — ships in 7–10 business days once back in stock',
+		readyToShip: false,
 		description: 'An oval emerald in a halo of diamonds — green, gold, and unmistakable.',
 		long: [
 			'The Emerald Halo Ring centres an oval emerald in a halo of small white stones, on a polished gold band. The halo makes the emerald look larger and brighter — green framed in light.',
@@ -389,31 +398,44 @@ export const collections: Collection[] = [
 	}
 ];
 
-export type Review = { name: string; rating: number; date: string; title: string; body: string };
+// Reviews are mock/placeholder copy for design approval — never emitted as
+// real Review schema. `photo` is a staged "worn" shot (generated image),
+// labelled as mock in the UI; `verified` means verified-buyer copy.
+export type Review = {
+	name: string;
+	rating: number;
+	date: string;
+	title: string;
+	body: string;
+	photo?: string;
+	photoAlt?: string;
+	metal?: string;
+	verified?: boolean;
+};
 
 export const productReviews: Record<string, Review[]> = {
 	'eternal-spark-ring': [
-		{ name: 'Sophia M.', rating: 5, date: 'Nov 2026', title: 'More beautiful in person', body: 'I was nervous buying a ring online, but it is even prettier in person. The stone catches light all day and the band is so comfortable I forget I am wearing it.' },
-		{ name: 'Daniel R.', rating: 5, date: 'Oct 2026', title: 'She said yes', body: 'Bought this for the proposal and she has not taken it off since. The box it came in made the moment feel even more special.' },
-		{ name: 'Grace L.', rating: 4, date: 'Sep 2026', title: 'Lovely, runs slightly small', body: 'Beautiful ring and great sparkle. I would suggest sizing up half a size — mine fits snug.' }
+		{ name: 'Sophia M.', rating: 5, date: 'Nov 2026', title: 'More beautiful in person', body: 'I was nervous buying a ring online, but it is even prettier in person. The stone catches light all day and the band is so comfortable I forget I am wearing it.', photo: 'review-worn-ring', photoAlt: 'A hand wearing the Eternal Spark Ring on cream linen', metal: 'Yellow Gold', verified: true },
+		{ name: 'Daniel R.', rating: 5, date: 'Oct 2026', title: 'She said yes', body: 'Bought this for the proposal and she has not taken it off since. The box it came in made the moment feel even more special.', metal: 'Yellow Gold', verified: true },
+		{ name: 'Grace L.', rating: 4, date: 'Sep 2026', title: 'Lovely, runs slightly small', body: 'Beautiful ring and great sparkle. I would suggest sizing up half a size — mine fits snug.', metal: 'White Gold', verified: true }
 	],
 	'emerald-grace-necklace': [
-		{ name: 'Amelia K.', rating: 5, date: 'Nov 2026', title: 'My most complimented piece', body: 'The green is so rich and the chain sits perfectly. I get asked about it every time I wear it out.' },
-		{ name: 'Priya S.', rating: 5, date: 'Oct 2026', title: 'Perfect anniversary gift', body: 'My husband bought this for our anniversary. The packaging alone felt luxurious, and the necklace is stunning.' }
+		{ name: 'Amelia K.', rating: 5, date: 'Nov 2026', title: 'My most complimented piece', body: 'The green is so rich and the chain sits perfectly. I get asked about it every time I wear it out.', photo: 'review-worn-necklace', photoAlt: 'The Emerald Grace Necklace worn at the collarbone', metal: 'Yellow Gold', verified: true },
+		{ name: 'Priya S.', rating: 5, date: 'Oct 2026', title: 'Perfect anniversary gift', body: 'My husband bought this for our anniversary. The packaging alone felt luxurious, and the necklace is stunning.', metal: 'Yellow Gold', verified: true }
 	],
 	'luminous-hoop-earrings': [
-		{ name: 'Chloe T.', rating: 5, date: 'Nov 2026', title: 'Everyday favourites', body: 'Light, sparkly, and they stay put all day. I wear them to work and out — they go with everything.' },
-		{ name: 'Maya D.', rating: 4, date: 'Sep 2026', title: 'Beautiful, slightly larger than expected', body: 'Gorgeous earrings. The medium size is a real statement — I reach for the small pair most days.' }
+		{ name: 'Chloe T.', rating: 5, date: 'Nov 2026', title: 'Everyday favourites', body: 'Light, sparkly, and they stay put all day. I wear them to work and out — they go with everything.', photo: 'review-worn-earrings', photoAlt: 'Gold diamond hoop earrings worn', metal: 'Yellow Gold', verified: true },
+		{ name: 'Maya D.', rating: 4, date: 'Sep 2026', title: 'Beautiful, slightly larger than expected', body: 'Gorgeous earrings. The medium size is a real statement — I reach for the small pair most days.', metal: 'Rose Gold', verified: true }
 	],
 	'radiant-tennis-bracelet': [
-		{ name: 'Elena V.', rating: 5, date: 'Nov 2026', title: 'Worth every penny', body: 'I bought this for myself after a promotion. The clasp feels secure, the stones are bright, and it looks far more expensive than it was.' },
-		{ name: 'Hannah W.', rating: 5, date: 'Oct 2026', title: 'Stunning', body: 'Bought as a gift for my mother. She cried when she opened it. Enough said.' }
+		{ name: 'Elena V.', rating: 5, date: 'Nov 2026', title: 'Worth every penny', body: 'I bought this for myself after a promotion. The clasp feels secure, the stones are bright, and it looks far more expensive than it was.', photo: 'review-worn-bracelet', photoAlt: 'A wrist wearing the Radiant Tennis Bracelet', metal: 'Yellow Gold', verified: true },
+		{ name: 'Hannah W.', rating: 5, date: 'Oct 2026', title: 'Stunning', body: 'Bought as a gift for my mother. She cried when she opened it. Enough said.', metal: 'White Gold', verified: true }
 	]
 };
 
 export const defaultReviews: Review[] = [
-	{ name: 'Verified buyer', rating: 5, date: 'Nov 2026', title: 'Beautiful quality', body: 'Lovely piece, beautifully boxed, and it arrived faster than expected. Would buy from Aurel again.' },
-	{ name: 'Verified buyer', rating: 5, date: 'Oct 2026', title: 'Exactly as pictured', body: 'The photos do not do it justice — it is even prettier in person and very comfortable to wear.' }
+	{ name: 'Verified buyer', rating: 5, date: 'Nov 2026', title: 'Beautiful quality', body: 'Lovely piece, beautifully boxed, and it arrived faster than expected. Would buy from Aurel again.', verified: true },
+	{ name: 'Verified buyer', rating: 5, date: 'Oct 2026', title: 'Exactly as pictured', body: 'The photos do not do it justice — it is even prettier in person and very comfortable to wear.', verified: true }
 ];
 
 export function reviewsFor(slug: string): Review[] {
@@ -572,6 +594,10 @@ export const faqs: FaqItem[] = [
 	{
 		q: 'Do you have a physical store?',
 		a: 'Yes — our SoHo boutique at 12 Mercer Street, New York, is open Monday to Saturday, 10:00 AM – 7:00 PM ET. You can also pick up online orders in store.'
+	},
+	{
+		q: 'Do you offer a student discount?',
+		a: 'Yes — students get 10% off with a valid student email or student ID, verified at checkout (demo verification: any .edu email address). It cannot be combined with other offers, and it does not apply to gift cards or bespoke pieces.'
 	}
 ];
 
@@ -629,6 +655,11 @@ export function instalment(amount: number): string {
 
 // Gift wrap at checkout: flat mock fee, added to the order total there.
 export const giftWrapFee = 5;
+
+// Lifetime Care extended warranty (round-3): optional, never pre-ticked,
+// offered as an unchecked checkbox on PDP and cart. Covers repairs and
+// re-plating beyond the lifetime craftsmanship warranty, for life.
+export const lifetimeCareFee = 29;
 
 // One reusable sourcing line, shown on every product page and the
 // sustainability page — the same words everywhere, so claims stay consistent.
@@ -719,7 +750,7 @@ export const warrantyExcludes = [
 ];
 
 export const warrantyClaimSteps = [
-	{ title: 'Email us', detail: 'Send your order number and a photo of the issue to hello@aureljewels.com.' },
+	{ title: 'Email us', detail: 'Send your order number and a photo of the issue to hello@aurel-jewels.com.' },
 	{ title: 'We assess it', detail: 'Our atelier replies within 2 business days with a prepaid label if we need the piece back.' },
 	{ title: 'We repair it', detail: 'Most repairs take 5–10 business days. If a piece cannot be repaired, we replace it.' }
 ];

@@ -10,6 +10,7 @@
 		content="30-day returns on unworn Aurel pieces, with a free return label and refunds in 5–10 business days. Exchanges, resizing and non-returnable items explained."
 	/>
 	<link rel="canonical" href="{site.url}/returns" />
+	<meta property="og:url" content="{site.url}/returns" />
 </svelte:head>
 
 <PageHero

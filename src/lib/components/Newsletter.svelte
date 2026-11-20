@@ -2,6 +2,7 @@
 	import { Check, Mail } from '@lucide/svelte';
 
 	let email = $state('');
+	let pending = $state(false);
 	let done = $state(false);
 	let error = $state('');
 
@@ -12,6 +13,13 @@
 			return;
 		}
 		error = '';
+		// Double opt-in (demo): a confirmation step stands in for the email
+		// the subscriber would receive — nothing is really sent.
+		pending = true;
+	}
+
+	function confirm() {
+		pending = false;
 		done = true;
 	}
 </script>
@@ -26,9 +34,34 @@
 			</div>
 		</div>
 		{#if done}
-			<p class="flex min-h-12 items-center gap-2 rounded-full bg-emerald-soft px-6 font-semibold text-emerald" role="status">
-				<Check size={19} aria-hidden="true" /> You are subscribed — welcome to Aurel!
+			<p class="flex min-h-12 flex-wrap items-center gap-2 rounded-full bg-emerald-soft px-6 font-semibold text-emerald" role="status">
+				<Check size={19} aria-hidden="true" /> You are subscribed — welcome to Aurel! Your 10% code is <strong>AUREL10</strong>.
 			</p>
+		{:else if pending}
+			<div class="w-full max-w-lg rounded-3xl bg-white p-5 ring-1 ring-line" role="status">
+				<p class="font-semibold text-ink">Almost there — check your inbox</p>
+				<p class="mt-1 text-sm leading-relaxed text-muted">
+					We sent a confirmation email to <strong class="text-ink">{email.trim()}</strong> (demo — no
+					email was really sent). Confirm below to finish subscribing and unlock 10% off your
+					first order.
+				</p>
+				<div class="mt-4 flex flex-wrap gap-2">
+					<button
+						type="button"
+						onclick={confirm}
+						class="inline-flex min-h-12 items-center rounded-full bg-emerald px-7 text-sm font-bold tracking-wide text-white uppercase transition-colors duration-200 hover:bg-emerald-deep"
+					>
+						Confirm my subscription
+					</button>
+					<button
+						type="button"
+						onclick={() => (pending = false)}
+						class="inline-flex min-h-12 items-center rounded-full bg-white px-6 text-sm font-bold text-ink ring-1 ring-line transition-colors duration-150 hover:ring-emerald"
+					>
+						Change email
+					</button>
+				</div>
+			</div>
 		{:else}
 			<form class="flex w-full max-w-lg flex-col gap-2 sm:flex-row" onsubmit={subscribe} novalidate>
 				<label for="newsletter-email" class="sr-only">Email address</label>

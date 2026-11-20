@@ -22,6 +22,7 @@
 		content="US ring sizes 5–9 with circumference and diameter, how to measure your ring size at home with a paper strip, and bracelet and necklace lengths."
 	/>
 	<link rel="canonical" href="{site.url}/size-guide" />
+	<meta property="og:url" content="{site.url}/size-guide" />
 </svelte:head>
 
 <PageHero

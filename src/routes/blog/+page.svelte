@@ -11,6 +11,7 @@
 		content="Guides to choosing, wearing and caring for fine jewellery — engagement rings, emerald care and gift ideas from the Aurel atelier."
 	/>
 	<link rel="canonical" href="{site.url}/blog" />
+	<meta property="og:url" content="{site.url}/blog" />
 </svelte:head>
 
 <PageHero

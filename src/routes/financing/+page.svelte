@@ -13,6 +13,7 @@
 		content="Pay for your Aurel piece over time: 4 interest-free payments with Klarna or Afterpay, or monthly payments with Affirm. Subject to approval — your terms are shown at checkout."
 	/>
 	<link rel="canonical" href="{site.url}/financing" />
+	<meta property="og:url" content="{site.url}/financing" />
 </svelte:head>
 
 <Breadcrumbs items={[{ label: 'Home', href: '/' }, { label: 'Financing' }]} />

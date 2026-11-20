@@ -96,6 +96,7 @@
 		content="Shop rings, necklaces, earrings and bracelets from Aurel Jewels. Free shipping over $50 and 30-day returns."
 	/>
 	<link rel="canonical" href="{site.url}/shop" />
+	<meta property="og:url" content="{site.url}/shop" />
 </svelte:head>
 
 <Breadcrumbs items={[{ label: 'Home', href: '/' }, { label: 'Shop' }]} />
@@ -110,7 +111,7 @@
 	<!-- Search -->
 	<form
 		role="search"
-		class="flex max-w-xl items-center gap-2"
+		class="flex max-w-xl flex-wrap items-center gap-2"
 		onsubmit={(e) => {
 			e.preventDefault();
 			updateParams({ q: searchText });
@@ -128,7 +129,7 @@
 				type="search"
 				bind:value={searchText}
 				oninput={onSearchInput}
-				placeholder="Search rings, necklaces, emeralds…"
+				placeholder="Search jewelry"
 				class="min-h-12 w-full rounded-full border border-line bg-white py-3 pr-14 pl-11 text-base text-ink placeholder:text-muted focus:border-emerald focus:outline-none"
 			/>
 			{#if searchText}
@@ -147,7 +148,7 @@
 		</div>
 		<button
 			type="submit"
-			class="min-h-12 shrink-0 rounded-full bg-emerald px-5 text-sm font-bold tracking-wide text-white uppercase transition-colors duration-200 hover:bg-emerald-deep"
+			class="min-h-12 shrink-0 rounded-full bg-emerald px-5 text-sm font-bold tracking-wide text-white uppercase transition-colors duration-200 hover:bg-emerald-deep max-[420px]:w-full max-[420px]:justify-center"
 		>
 			Search
 		</button>

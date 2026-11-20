@@ -14,6 +14,7 @@
 		content="How to choose an engagement ring: the 4Cs, stone shapes, settings, ring size and a realistic budget — plus the rings our customers propose with most."
 	/>
 	<link rel="canonical" href="{site.url}/guides/engagement-ring-guide" />
+	<meta property="og:url" content="{site.url}/guides/engagement-ring-guide" />
 </svelte:head>
 
 <Breadcrumbs

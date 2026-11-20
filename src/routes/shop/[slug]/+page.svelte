@@ -1,12 +1,18 @@
 <script lang="ts">
-	import { Check, ChevronLeft, ChevronRight, Heart, Minus, Plus, ShoppingBag, Truck, X, ZoomIn } from '@lucide/svelte';
-	import { categories, instalment, products, reviewsFor, site, sourcingLine, usd } from '#lib/data/site.ts';
+	import { untrack } from 'svelte';
+	import { Bell, Check, ChevronLeft, ChevronRight, Heart, Minus, Plus, ShieldCheck, ShoppingBag, Truck, X, ZoomIn } from '@lucide/svelte';
+	import { categories, instalment, lifetimeCareFee, products, reviewsFor, site, sourcingLine, usd } from '#lib/data/site.ts';
 	import { addToCart } from '#lib/cart.svelte.ts';
+	import { alerts, toggleStockAlert } from '#lib/alerts.svelte.ts';
+	import { recordView } from '#lib/recentlyViewed.svelte.ts';
 	import { toggleWishlist, wishlist } from '#lib/wishlist.svelte.ts';
 	import Breadcrumbs from '#lib/components/Breadcrumbs.svelte';
 	import Picture from '#lib/components/Picture.svelte';
 	import ProductCard from '#lib/components/ProductCard.svelte';
+	import RecentlyViewed from '#lib/components/RecentlyViewed.svelte';
+	import SpinViewer from '#lib/components/SpinViewer.svelte';
 	import Stars from '#lib/components/Stars.svelte';
+	import TrustBlock from '#lib/components/TrustBlock.svelte';
 	import TrustStrip from '#lib/components/TrustStrip.svelte';
 
 	let { data }: { data: { product: (typeof products)[number]; hasAlt: boolean } } = $props();
@@ -37,6 +43,38 @@
 	let qty = $state(1);
 	let added = $state(false);
 
+	// Lifetime Care extended warranty: optional, never pre-ticked (+$29).
+	let lifetimeCare = $state(false);
+	// Back-in-stock notify (out-of-stock products only).
+	let notifyEmail = $state('');
+	let notifyDone = $state(false);
+	let notifyError = $state('');
+	// Review filters.
+	let reviewRating = $state(0); // 0 = all ratings
+	let reviewMetal = $state('all');
+	let reviewVerifiedOnly = $state(false);
+	let reviewPhotoOnly = $state(false);
+
+	// 360° spin frames (generated turntable stills) — Eternal Spark Ring only
+	// for now; other pieces use the rotate-photo fallback in SpinViewer.
+	const spinFrames = $derived(
+		product.slug === 'eternal-spark-ring'
+			? Array.from({ length: 8 }, (_, i) => `spin-eternal-spark-0${i + 1}`)
+			: []
+	);
+
+	const isOutOfStock = $derived(product.stockStatus === 'out-of-stock');
+	const isLowStock = $derived(product.stockStatus === 'low');
+	const filteredReviews = $derived(
+		reviews.filter(
+			(r) =>
+				(reviewRating === 0 || r.rating === reviewRating) &&
+				(reviewMetal === 'all' || r.metal === reviewMetal) &&
+				(!reviewVerifiedOnly || r.verified) &&
+				(!reviewPhotoOnly || r.photo)
+		)
+	);
+
 	// Engraving (rings, bracelets, necklaces only): +$15, max 20 chars,
 	// stored in the cart line option. Engraved pieces are final sale.
 	const engravable = $derived(['rings', 'bracelets', 'necklaces'].includes(product.category));
@@ -44,7 +82,9 @@
 	const engravingMax = 20;
 	let engraving = $state('');
 	const hasEngraving = $derived(engraving.trim().length > 0);
-	const unitPrice = $derived(product.price + (hasEngraving ? engravingFee : 0));
+	const unitPrice = $derived(
+		product.price + (hasEngraving ? engravingFee : 0) + (lifetimeCare ? lifetimeCareFee : 0)
+	);
 
 	// Reset selections when navigating between products client-side.
 	$effect(() => {
@@ -56,11 +96,22 @@
 		qty = 1;
 		added = false;
 		engraving = '';
+		lifetimeCare = false;
+		notifyEmail = '';
+		notifyDone = false;
+		notifyError = '';
+		reviewRating = 0;
+		reviewMetal = 'all';
+		reviewVerifiedOnly = false;
+		reviewPhotoOnly = false;
+		// recordView reads the history list AND writes it — run it untracked
+		// so this effect doesn't subscribe to the list and re-run forever.
+		untrack(() => recordView(product.slug));
 	});
 
 	const sizeLabel = $derived(/^\d+$/.test(size) ? `Size ${size}` : size);
 	const option = $derived(
-		`${metal} · ${sizeLabel}${hasEngraving ? ` · Engraving “${engraving.trim()}” (+$15)` : ''}`
+		`${metal} · ${sizeLabel}${hasEngraving ? ` · Engraving “${engraving.trim()}” (+$15)` : ''}${lifetimeCare ? ` · Lifetime Care (+${usd(lifetimeCareFee)})` : ''}`
 	);
 	const instalmentAmount = $derived(instalment(unitPrice));
 
@@ -68,6 +119,16 @@
 		addToCart(product.slug, option, qty, unitPrice);
 		added = true;
 		window.setTimeout(() => (added = false), 2000);
+	}
+
+	function submitNotify() {
+		if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(notifyEmail.trim())) {
+			notifyError = 'Please enter a valid email address.';
+			return;
+		}
+		notifyError = '';
+		if (!alerts.wantsStock(product.slug)) toggleStockAlert(product.slug);
+		notifyDone = true;
 	}
 
 	// ─── Lightbox ───
@@ -140,19 +201,55 @@
 		};
 	});
 
+	// Schema: ProductGroup with one variant per metal, OfferShippingDetails
+	// and MerchantReturnPolicy on every variant offer. No aggregateRating
+	// and no Review schema — the reviews on this page are mock data.
+	const availability = $derived(
+		product.stockStatus === 'out-of-stock'
+			? 'https://schema.org/OutOfStock'
+			: product.stockStatus === 'low'
+				? 'https://schema.org/LimitedAvailability'
+				: 'https://schema.org/InStock'
+	);
+	const variantOffer = $derived({
+		'@type': 'Offer',
+		price: product.price,
+		priceCurrency: 'USD',
+		availability,
+		shippingDetails: {
+			'@type': 'OfferShippingDetails',
+			shippingRate: { '@type': 'MonetaryAmount', value: 6.95, currency: 'USD' },
+			shippingDestination: { '@type': 'DefinedRegion', addressCountry: 'US' },
+			deliveryTime: {
+				'@type': 'ShippingDeliveryTime',
+				handlingTime: { '@type': 'QuantitativeValue', minValue: 1, maxValue: 2, unitCode: 'DAY' },
+				transitTime: { '@type': 'QuantitativeValue', minValue: 3, maxValue: 5, unitCode: 'DAY' }
+			}
+		},
+		hasMerchantReturnPolicy: {
+			'@type': 'MerchantReturnPolicy',
+			returnPolicyCategory: 'https://schema.org/MerchantReturnFiniteReturnWindow',
+			merchantReturnDays: 30,
+			returnMethod: 'https://schema.org/ReturnByMail',
+			returnFees: 'https://schema.org/FreeReturn',
+			applicableCountry: 'US'
+		}
+	});
 	const jsonLd = $derived(
 		JSON.stringify({
 			'@context': 'https://schema.org',
-			'@type': 'Product',
+			'@type': 'ProductGroup',
+			productGroupID: product.slug,
 			name: product.name,
-			image: `${site.url}/images/${product.image}-800.jpg`,
 			description: product.description,
-			offers: {
-				'@type': 'Offer',
-				price: product.price,
-				priceCurrency: 'USD',
-				availability: 'https://schema.org/InStock'
-			}
+			variesBy: ['https://schema.org/color'],
+			hasVariant: product.metals.map((m) => ({
+				'@type': 'Product',
+				name: `${product.name} — ${m}`,
+				image: `${site.url}/images/${product.image}-800.jpg`,
+				description: product.description,
+				offers: variantOffer
+			}))
 		})
 	);
 </script>
@@ -161,6 +258,7 @@
 	<title>{product.name} — Aurel Jewels</title>
 	<meta name="description" content={product.description} />
 	<link rel="canonical" href="{site.url}/shop/{product.slug}" />
+	<meta property="og:url" content="{site.url}/shop/{product.slug}" />
 	<meta property="og:image" content="{site.url}/images/{product.image}-1200.jpg" />
 	<meta property="og:image:alt" content={product.imageAlt} />
 	<meta name="twitter:image" content="{site.url}/images/{product.image}-1200.jpg" />
@@ -205,6 +303,15 @@
 					imgClass="aspect-square w-full object-cover transition-transform duration-300 group-hover:scale-[1.02]"
 					pictureClass="block"
 				/>
+				{#if hasEngraving}
+					<!-- Engraving live preview: the text as it will read on the piece. -->
+					<span
+						aria-hidden="true"
+						class="pointer-events-none absolute inset-x-0 bottom-16 px-6 text-center font-display text-xl italic text-ink/80 sm:text-2xl"
+					>
+						“{engraving.trim()}”
+					</span>
+				{/if}
 				<span
 					class="pointer-events-none absolute right-4 bottom-4 inline-flex min-h-11 items-center gap-1.5 rounded-full bg-white/95 px-4 text-xs font-bold text-ink shadow-sm"
 				>
@@ -237,6 +344,9 @@
 					{/each}
 				</div>
 			{/if}
+			<div class="mt-6">
+				<SpinViewer name={activeImage.name} alt={activeImage.alt} frames={spinFrames} />
+			</div>
 		</div>
 
 		<!-- Buy box -->
@@ -371,7 +481,79 @@
 				</div>
 			{/if}
 
+			{#if isLowStock}
+				<p
+					class="mt-6 rounded-2xl bg-amber-50 px-4 py-3 text-sm font-semibold text-amber-800 ring-1 ring-amber-200"
+					role="status"
+				>
+					Low stock — only a few left. Order soon to secure this piece.
+				</p>
+			{/if}
+
 			<!-- Qty + add to cart (stacks cleanly on mobile: qty + heart, then full-width button) -->
+			{#if isOutOfStock}
+				<div id="buy-box" class="mt-8 rounded-3xl bg-white p-6 ring-1 ring-line">
+					<p class="font-display text-xl font-semibold text-ink">Currently out of stock</p>
+					<p class="mt-2 text-sm leading-relaxed text-muted">
+						{product.leadTime ??
+							'This piece is made to order — join the list and we will email you the moment it is back.'}
+					</p>
+					{#if notifyDone}
+						<p
+							class="mt-4 rounded-2xl bg-emerald-soft px-4 py-3 text-sm font-semibold text-emerald"
+							role="status"
+						>
+							You are on the list — we will email {notifyEmail} as soon as it is back in stock.
+						</p>
+					{:else}
+						<form
+							class="mt-4 flex flex-wrap gap-2"
+							onsubmit={(e) => {
+								e.preventDefault();
+								submitNotify();
+							}}
+						>
+							<label for="notify-email" class="sr-only">Email for back-in-stock alert</label>
+							<input
+								id="notify-email"
+								type="email"
+								bind:value={notifyEmail}
+								placeholder="you@example.com"
+								autocomplete="email"
+								class="min-h-12 min-w-0 flex-1 rounded-full border border-line bg-white px-4 text-base text-ink placeholder:text-muted focus:border-emerald focus:outline-none"
+							/>
+							<button
+								type="submit"
+								class="inline-flex min-h-12 items-center gap-2 rounded-full bg-emerald px-5 text-sm font-bold tracking-wide text-white uppercase transition-colors duration-200 hover:bg-emerald-deep"
+							>
+								<Bell size={16} aria-hidden="true" /> Notify me
+							</button>
+						</form>
+						{#if notifyError}
+							<p class="mt-2 text-sm text-red-700" role="alert">{notifyError}</p>
+						{/if}
+						<p class="mt-3 text-xs leading-relaxed text-muted">
+							One email when it is back — no spam. Manage alerts any time in
+							<a href="/account" class="font-semibold text-emerald underline underline-offset-2"
+								>My account</a
+							>.
+						</p>
+					{/if}
+					<button
+						type="button"
+						onclick={() => toggleWishlist(product.slug)}
+						aria-pressed={wishlist.has(product.slug)}
+						class="mt-5 inline-flex min-h-12 items-center gap-2 rounded-full px-5 text-sm font-bold text-emerald ring-1 ring-line transition-colors duration-150 hover:ring-emerald"
+					>
+						<Heart
+							size={17}
+							aria-hidden="true"
+							class={wishlist.has(product.slug) ? 'fill-emerald text-emerald' : ''}
+						/>
+						{wishlist.has(product.slug) ? 'Saved to wishlist' : 'Save to wishlist'}
+					</button>
+				</div>
+			{:else}
 			<div id="buy-box" class="mt-8 flex flex-wrap items-center gap-3">
 				<div class="order-1 flex items-center rounded-full bg-white ring-1 ring-line" role="group" aria-label="Quantity">
 					<button
@@ -427,11 +609,40 @@
 					/>
 				</button>
 			</div>
+			{/if}
+
+			{#if !isOutOfStock}
+				<label
+					for="pdp-lifetime-care"
+					class="mt-5 flex cursor-pointer items-start gap-3 rounded-3xl bg-white p-4 ring-1 ring-line"
+				>
+					<input
+						id="pdp-lifetime-care"
+						type="checkbox"
+						bind:checked={lifetimeCare}
+						class="mt-1 h-5 w-5 shrink-0 accent-emerald"
+					/>
+					<span class="text-[0.95rem] leading-relaxed text-ink">
+						<span class="flex items-center gap-2 font-semibold">
+							<ShieldCheck size={18} aria-hidden="true" class="text-emerald" />
+							Add Lifetime Care — {usd(lifetimeCareFee)}
+						</span>
+						<span class="mt-1 block text-sm text-muted">
+							Extended cover for life: free repairs, re-plating and stone re-setting beyond the
+							lifetime craftsmanship warranty. Optional — never added without your say-so.
+						</span>
+					</span>
+				</label>
+			{/if}
 
 			<p class="mt-4 flex items-center gap-2 text-sm text-muted">
 				<Truck size={17} aria-hidden="true" class="shrink-0 text-emerald" />
 				Free shipping over $50 · Ships in 1–2 business days · 30-day free returns
 			</p>
+
+			<div class="mt-6">
+				<TrustBlock {product} />
+			</div>
 
 			<div class="mt-6">
 				<TrustStrip />
@@ -468,8 +679,48 @@
 		<p class="mt-2 flex items-center gap-2 text-muted">
 			<Stars rating={product.rating} /> {product.rating} out of 5 · {product.reviews} reviews
 		</p>
-		<div class="mt-6 space-y-4">
-			{#each reviews as review (review.name + review.title)}
+		<p class="mt-2 text-sm text-muted">
+			Reviews shown here are mock copy for design approval. Photos are staged mock shots, not
+			customer photos.
+		</p>
+		<!-- Filters -->
+		<div class="mt-6 flex flex-wrap items-center gap-3 rounded-3xl bg-white p-4 ring-1 ring-line">
+			<label for="review-rating" class="text-sm font-semibold text-ink">Rating</label>
+			<select
+				id="review-rating"
+				bind:value={reviewRating}
+				class="min-h-12 rounded-full border border-line bg-white px-4 text-sm font-semibold text-ink focus:border-emerald focus:outline-none"
+			>
+				<option value={0}>All ratings</option>
+				<option value={5}>5 stars</option>
+				<option value={4}>4 stars</option>
+			</select>
+			<label for="review-metal" class="text-sm font-semibold text-ink">Metal</label>
+			<select
+				id="review-metal"
+				bind:value={reviewMetal}
+				class="min-h-12 rounded-full border border-line bg-white px-4 text-sm font-semibold text-ink focus:border-emerald focus:outline-none"
+			>
+				<option value="all">All metals</option>
+				{#each product.metals as m (m)}
+					<option value={m}>{m}</option>
+				{/each}
+			</select>
+			<label for="review-verified" class="inline-flex min-h-12 cursor-pointer items-center gap-2 text-sm font-semibold text-ink">
+				<input id="review-verified" type="checkbox" bind:checked={reviewVerifiedOnly} class="h-5 w-5 accent-emerald" />
+				Verified only
+			</label>
+			<label for="review-photo" class="inline-flex min-h-12 cursor-pointer items-center gap-2 text-sm font-semibold text-ink">
+				<input id="review-photo" type="checkbox" bind:checked={reviewPhotoOnly} class="h-5 w-5 accent-emerald" />
+				With photo
+			</label>
+		</div>
+		<p class="mt-4 text-sm text-muted" aria-live="polite">
+			Showing {filteredReviews.length} of {reviews.length}
+			{reviews.length === 1 ? 'review' : 'reviews'}
+		</p>
+		<div class="mt-4 space-y-4">
+			{#each filteredReviews as review (review.name + review.title)}
 				<article class="rounded-3xl bg-white p-6 ring-1 ring-line">
 					<div class="flex flex-wrap items-center justify-between gap-2">
 						<Stars rating={review.rating} />
@@ -477,10 +728,32 @@
 					</div>
 					<h3 class="mt-3 font-semibold text-ink">{review.title}</h3>
 					<p class="mt-2 leading-relaxed text-muted">{review.body}</p>
+					{#if review.photo}
+						<figure class="mt-4">
+							<Picture
+								name={review.photo}
+								alt={review.photoAlt ?? `Photo with review by ${review.name}`}
+								width={480}
+								height={360}
+								sizes="320px"
+								imgClass="aspect-[4/3] w-56 max-w-full rounded-2xl object-cover"
+								pictureClass="block"
+							/>
+							<figcaption class="mt-2 text-xs text-muted">
+								Mock photo — staged shot, not a customer photo
+							</figcaption>
+						</figure>
+					{/if}
 					<p class="mt-3 text-sm font-medium text-ink">
-						{review.name} <span class="font-normal text-muted">· Verified buyer</span>
+						{review.name}
+						{#if review.metal}<span class="font-normal text-muted"> · {review.metal}</span>{/if}
+						{#if review.verified}<span class="font-normal text-muted"> · Verified buyer</span>{/if}
 					</p>
 				</article>
+			{:else}
+				<p class="rounded-3xl bg-white p-6 text-center text-muted ring-1 ring-line">
+					No reviews match those filters — try widening them.
+				</p>
 			{/each}
 		</div>
 	</div>
@@ -498,6 +771,8 @@
 			</div>
 		</div>
 	{/if}
+
+	<RecentlyViewed excludeSlug={product.slug} />
 
 	<!-- Lightbox -->
 	{#if lightboxOpen}
@@ -559,7 +834,7 @@
 	{/if}
 
 	<!-- Sticky mobile add-to-cart bar (appears after the buy box scrolls away) -->
-	{#if !buyBoxVisible && !lightboxOpen}
+	{#if !buyBoxVisible && !lightboxOpen && !isOutOfStock}
 		<div
 			class="fixed inset-x-0 bottom-14 z-40 border-t border-line bg-white/95 shadow-[0_-4px_20px_rgba(11,61,46,0.10)] backdrop-blur lg:hidden"
 		>

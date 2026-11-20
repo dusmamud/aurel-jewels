@@ -1,5 +1,6 @@
 <script lang="ts">
 	import PageHero from '#lib/components/PageHero.svelte';
+	import Picture from '#lib/components/Picture.svelte';
 	import { site } from '#lib/data/site.ts';
 
 	let name = $state('');
@@ -35,6 +36,7 @@
 		content="Visit the Aurel Jewels boutique at 12 Mercer Street, SoHo, New York — or call, email or WhatsApp us with any question about a piece."
 	/>
 	<link rel="canonical" href="{site.url}/contact" />
+	<meta property="og:url" content="{site.url}/contact" />
 </svelte:head>
 
 <PageHero
@@ -55,7 +57,7 @@
 						> within one business day — usually much sooner.
 					</p>
 					<p class="mt-4 text-sm text-muted">
-						In a hurry? Call us at <a href={site.phoneHref} class="font-semibold text-gold-dark underline underline-offset-4">{site.phoneDisplay}</a>.
+						In a hurry? Call us at <a href={site.phoneHref} class="inline-flex min-h-12 items-center font-semibold text-gold-dark underline underline-offset-4">{site.phoneDisplay}</a>.
 					</p>
 					<button
 						type="button"
@@ -140,26 +142,41 @@
 
 		<!-- Store info -->
 		<div class="min-w-0 space-y-6">
-			<div class="overflow-hidden rounded-3xl border border-line">
-				<iframe
-					title="Map — Aurel Jewels, 12 Mercer Street, SoHo, New York"
-					src={site.mapEmbed}
-					class="h-80 w-full border-0"
-					loading="lazy"
-					referrerpolicy="no-referrer-when-downgrade"
-				></iframe>
+			<div class="overflow-hidden rounded-3xl border border-line bg-white">
+				<Picture
+					name="map-soho"
+					alt="Map showing Aurel Jewels at 12 Mercer Street, SoHo, New York, between Houston and Prince Streets"
+					width={1200}
+					height={900}
+					sizes="(min-width: 1024px) 50vw, 100vw"
+					eager
+					imgClass="aspect-[4/3] w-full object-cover"
+					pictureClass="block"
+				/>
+				<div class="p-5">
+					<p class="font-semibold text-ink">{site.address}</p>
+					<a
+						href="https://maps.google.com/?q=12+Mercer+Street,+SoHo,+New+York,+NY+10013"
+						target="_blank"
+						rel="noopener"
+						class="mt-3 inline-flex min-h-12 items-center rounded-full bg-emerald px-6 text-sm font-bold tracking-wide text-white uppercase transition-colors duration-200 hover:bg-emerald-deep"
+					>
+						Open in Google Maps →
+					</a>
+				</div>
 			</div>
 			<div class="grid gap-4 sm:grid-cols-2">
 				<div class="rounded-3xl bg-white p-5 ring-1 ring-line">
 					<h2 class="font-semibold text-ink">Visit the boutique</h2>
 					<p class="mt-2 text-sm leading-relaxed break-words text-muted">{site.address}</p>
 					<p class="mt-2 text-sm leading-relaxed text-muted">{site.hours}</p>
+					<a href="/visit-us" class="mt-3 inline-flex min-h-12 items-center text-sm font-semibold text-emerald underline underline-offset-2">Plan your visit →</a>
 				</div>
 				<div class="rounded-3xl bg-white p-5 ring-1 ring-line">
 					<h2 class="font-semibold text-ink">Call or write</h2>
 					<p class="mt-2 text-sm leading-relaxed text-muted">
-						Phone: <a href={site.phoneHref} class="font-semibold text-gold-dark underline underline-offset-4">{site.phoneDisplay}</a><br />
-						Email: <a href="mailto:{site.email}" class="font-semibold break-all text-gold-dark underline underline-offset-4">{site.email}</a>
+						Phone: <a href={site.phoneHref} class="inline-flex min-h-12 items-center font-semibold text-gold-dark underline underline-offset-4">{site.phoneDisplay}</a><br />
+						Email: <a href="mailto:{site.email}" class="inline-flex min-h-12 items-center font-semibold break-all text-gold-dark underline underline-offset-4">{site.email}</a>
 					</p>
 					<a
 						href={site.whatsappHref}

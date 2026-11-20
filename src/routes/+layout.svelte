@@ -7,18 +7,25 @@
 	import '@fontsource/inter/600.css';
 	import '@fontsource/inter/700.css';
 	import '../app.css';
+	import { onMount } from 'svelte';
 	import { onNavigate } from '$app/navigation';
 	import Lenis from 'lenis';
 	import gsap from 'gsap';
 	import { ScrollTrigger } from 'gsap/ScrollTrigger';
-	import { Phone, ShoppingBag } from '@lucide/svelte';
 	import Header from '#lib/components/Header.svelte';
 	import Footer from '#lib/components/Footer.svelte';
 	import Newsletter from '#lib/components/Newsletter.svelte';
 	import WhatsAppIcon from '#lib/components/WhatsAppIcon.svelte';
+	import BottomNav from '#lib/components/BottomNav.svelte';
+	import CookieBanner from '#lib/components/CookieBanner.svelte';
+	import AskExpert from '#lib/components/AskExpert.svelte';
 	import { site } from '#lib/data/site.ts';
 	import { loadCart } from '#lib/cart.svelte.ts';
 	import { loadWishlist } from '#lib/wishlist.svelte.ts';
+	import { loadRecentlyViewed } from '#lib/recentlyViewed.svelte.ts';
+	import { loadCompare } from '#lib/compare.svelte.ts';
+	import { loadAlerts } from '#lib/alerts.svelte.ts';
+	import { loadOrders } from '#lib/orders.svelte.ts';
 
 	let { children } = $props();
 
@@ -63,11 +70,18 @@
 		sameAs: [site.social.instagram, site.social.facebook, site.social.x]
 	};
 
-	// Restore persisted cart + wishlist once, on the client only
-	// ($effect never runs during SSR/prerender).
-	$effect(() => {
+	// Restore persisted cart, wishlist, recently-viewed, compare, alerts and
+	// orders once, on the client only (onMount never runs during SSR/prerender
+	// and, unlike $effect, tracks no dependencies — the load*() calls splice
+	// the same $state arrays they read, so an $effect around them re-triggers
+	// itself forever: effect_update_depth_exceeded).
+	onMount(() => {
 		loadCart();
 		loadWishlist();
+		loadRecentlyViewed();
+		loadCompare();
+		loadAlerts();
+		loadOrders();
 	});
 
 	// Smooth scroll (Lenis) + GSAP ScrollTrigger, one rAF loop, reduced-motion gated.
@@ -120,14 +134,12 @@
 		name="description"
 		content="Timeless jewelry crafted for your everyday moments and life's most special ones. Rings, necklaces, earrings and bracelets — free shipping over $50."
 	/>
-	<link rel="canonical" href={site.url} />
 	<meta property="og:type" content="website" />
 	<meta property="og:title" content="Aurel Jewels — Fine Jewelry for a Brighter You" />
 	<meta
 		property="og:description"
 		content="Every detail, a little extraordinary. Timeless jewelry, ethically sourced and crafted to last."
 	/>
-	<meta property="og:url" content={site.url} />
 	<meta property="og:image" content="{site.url}/images/hero-1200.jpg" />
 	<meta
 		property="og:image:alt"
@@ -173,27 +185,9 @@
 	<WhatsAppIcon size={26} />
 </a>
 
-<!-- Sticky mobile bottom bar: Call / WhatsApp / Shop -->
-<nav
-	aria-label="Quick actions"
-	class="fixed inset-x-0 bottom-0 z-40 grid grid-cols-3 border-t border-line bg-white/95 pb-[env(safe-area-inset-bottom)] backdrop-blur lg:hidden"
->
-	<a href={site.phoneHref} class="flex min-h-14 flex-col items-center justify-center gap-0.5 text-xs font-semibold text-ink">
-		<Phone size={20} class="text-emerald" aria-hidden="true" />
-		Call
-	</a>
-	<a
-		href={site.whatsappHref}
-		target="_blank"
-		rel="noopener"
-		class="flex min-h-14 flex-col items-center justify-center gap-0.5 text-xs font-semibold text-ink"
-	>
-		<span class="text-[#25d366]"><WhatsAppIcon size={20} /></span>
-		WhatsApp
-	</a>
-	<a href="/shop" class="flex min-h-14 items-center justify-center gap-2 bg-emerald text-sm font-bold text-white">
-		<ShoppingBag size={18} aria-hidden="true" /> Shop Now
-	</a>
-</nav>
-<!-- Spacer so the sticky bar never covers footer content on mobile -->
-<div class="h-14 lg:hidden" aria-hidden="true"></div>
+<!-- Mobile bottom navigation: Home / Shop / Search / Saved / Bag (one bottom system) -->
+<BottomNav />
+
+<!-- Ask an expert (PDP / cart / checkout only) + cookie consent -->
+<AskExpert />
+<CookieBanner />

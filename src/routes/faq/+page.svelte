@@ -11,6 +11,7 @@
 		content="Shipping, returns, sizing, payments and care — every question customers ask about Aurel Jewels, answered plainly."
 	/>
 	<link rel="canonical" href="{site.url}/faq" />
+	<meta property="og:url" content="{site.url}/faq" />
 </svelte:head>
 
 <PageHero

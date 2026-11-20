@@ -12,6 +12,7 @@
 		content="Gold explained plainly: 14k vs 18k, yellow vs white vs rose gold, vermeil vs solid vs gold-fill, and platinum — plus lab vs natural diamonds and emeralds, and the 4Cs."
 	/>
 	<link rel="canonical" href="{site.url}/guides/metals-gemstones" />
+	<meta property="og:url" content="{site.url}/guides/metals-gemstones" />
 </svelte:head>
 
 <Breadcrumbs

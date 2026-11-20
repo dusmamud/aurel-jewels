@@ -19,6 +19,7 @@
 		content="Lifetime warranty — craftsmanship, covered for life. What Aurel's warranty covers and excludes, GIA/IGI certification, hallmarking, insured shipping and how to claim."
 	/>
 	<link rel="canonical" href="{site.url}/warranty" />
+	<meta property="og:url" content="{site.url}/warranty" />
 </svelte:head>
 
 <Breadcrumbs

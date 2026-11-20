@@ -17,7 +17,7 @@ export const wishlist = {
 	}
 };
 
-/** Load the saved wishlist. Browser-only — call from a client $effect (see +layout). */
+/** Load the saved wishlist. Browser-only — call once from onMount (see +layout). */
 export function loadWishlist() {
 	if (typeof window === 'undefined') return;
 	try {
